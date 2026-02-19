@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --bg:       #F7F8FA;
+      --surface:  #FFFFFF;
+      --border:   #E4E7EC;
+      --text-1:   #101828;
+      --text-2:   #475467;
+      --text-3:   #98A2B3;
+
+      /* Severity */
+      --critical:    #DC2626;
+      --critical-bg: #FFF5F5;
+      --critical-bd: #FECACA;
+      --warning:     #D97706;
+      --warning-bg:  #FFFBEB;
+      --warning-bd:  #FDE68A;
+
+      /* Reason: Text style */
+      --c-ts:    #1D4ED8;
+      --c-ts-bg: #EFF6FF;
+      --c-ts-bd: #BFDBFE;
+
+      /* Reason: Text style が混在 */
+      --c-tm:    #6D28D9;
+      --c-tm-bg: #F5F3FF;
+      --c-tm-bd: #DDD6FE;
+
+      /* Reason: Fill color */
+      --c-fill:    #C2410C;
+      --c-fill-bg: #FFF7ED;
+      --c-fill-bd: #FED7AA;
+
+      /* Reason: Stroke color */
+      --c-stroke:    #065F46;
+      --c-stroke-bg: #ECFDF5;
+      --c-stroke-bd: #A7F3D0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      font-size: 12px;
+      background: var(--bg);
+      color: var(--text-1);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ───────────────────────────────── */
+    .header {
+      flex-shrink: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px 10px;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .app-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -0.015em;
+    }
+
+    .btn-group { display: flex; gap: 5px; }
+
+    .btn {
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 11px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      line-height: 1.5;
+      transition: background 0.1s, color 0.1s, border-color 0.1s;
+    }
+
+    .btn-primary { background: var(--text-1); color: #fff; border-color: var(--text-1); }
+    .btn-primary:hover { background: #1d2939; }
+    .btn-primary:active { background: #0d1526; }
+    .btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+    .btn-ghost { background: transparent; color: var(--text-2); }
+    .btn-ghost:hover { background: var(--bg); }
+
+    .header-desc {
+      font-size: 11px;
+      color: var(--text-3);
+      line-height: 1.4;
+    }
+
+    /* ── Summary ──────────────────────────────── */
+    #summary-wrap {
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-placeholder,
+    .summary-loading {
+      padding: 9px 14px;
+      font-size: 11px;
+      color: var(--text-3);
+      background: var(--surface);
+    }
+
+    .summary-loading {
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .spinner {
+      width: 12px; height: 12px;
+      border: 2px solid var(--border);
+      border-top-color: var(--text-1);
+      border-radius: 50%;
+      animation: spin 0.5s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .scan-scope {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 14px 0;
+      background: var(--surface);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-3);
+    }
+
+    .scope-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      padding: 6px 14px 8px;
+      background: var(--surface);
+    }
+
+    .stat {
+      padding: 6px 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-3);
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+
+    .stat-num {
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text-1);
+    }
+
+    .stat.is-critical .stat-num { color: var(--critical); }
+    .stat.is-warning  .stat-num { color: var(--warning); }
+
+    /* ── List header ──────────────────────────── */
+    #list-header-wrap {
+      flex-shrink: 0;
+    }
+
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px 4px;
+    }
+
+    .list-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-2);
+      letter-spacing: -0.01em;
+    }
+
+    .list-count {
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      background: var(--text-1);
+      padding: 1px 7px;
+      border-radius: 99px;
+      line-height: 1.6;
+    }
+
+    /* ── Layer list ───────────────────────────── */
+    #layer-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      list-style: none;
+    }
+
+    #layer-list::-webkit-scrollbar { width: 3px; }
+    #layer-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    #layer-list::-webkit-scrollbar-track { background: transparent; }
+
+    /* ── Layer card ───────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid transparent;
+      border-radius: 8px;
+      padding: 8px 10px;
+      transition: border-color 0.12s;
+    }
+    .card:hover { border-color: #c5cad6; }
+    .card.critical {
+      border-left-color: var(--critical);
+      background: var(--critical-bg);
+      border-color: var(--critical-bd);
+    }
+    .card.warning {
+      border-left-color: var(--warning);
+      background: var(--warning-bg);
+      border-color: var(--warning-bd);
+    }
+    .card.critical:hover { border-left-color: var(--critical); border-color: #f9a8a8; }
+    .card.warning:hover  { border-left-color: var(--warning);  border-color: #fbbf24; }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+
+    .layer-name {
+      flex: 1;
+      min-width: 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .type-pill {
+      flex-shrink: 0;
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-3);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 4px;
+      letter-spacing: 0.03em;
+    }
+
+    .layer-path {
+      font-size: 10px;
+      color: var(--text-3);
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.4;
+    }
+
+    .card-foot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: space-between;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+
+    .badge-ts     { color: #1E3A8A; background: #BFDBFE; border-color: #93C5FD; }
+    .badge-tm     { color: #3B0764; background: #DDD6FE; border-color: #C4B5FD; }
+    .badge-fill   { color: #7C2D12; background: #FED7AA; border-color: #FDBA74; }
+    .badge-stroke { color: #064E3B; background: #A7F3D0; border-color: #6EE7B7; }
+
+    /* Severity pill */
+    .sev-pill {
+      flex-shrink: 0;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+    }
+    .sev-pill.critical {
+      color: var(--critical);
+      background: #FEE2E2;
+      border-color: var(--critical-bd);
+    }
+    .sev-pill.warning {
+      color: #92400E;
+      background: #FEF3C7;
+      border-color: var(--warning-bd);
+    }
+
+    .jump-btn {
+      font-family: var(--font);
+      flex-shrink: 0;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-1);
+      background: white;
+      border: 1.5px solid var(--text-1);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+    }
+    .jump-btn:hover {
+      background: var(--text-1);
+      color: white;
+    }
+
+    /* ── State boxes (empty / initial / success) ─ */
+    #layer-list > li.state-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .state-icon  { font-size: 26px; margin-bottom: 4px; }
+    .state-title { font-size: 12px; font-weight: 600; color: var(--text-2); }
+    .state-desc  { font-size: 11px; color: var(--text-3); line-height: 1.6; }
+
+    /* ── Legend ───────────────────────────────── */
+    .legend {
+      flex-shrink: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 6px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+    }
+
+    .leg {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--text-2);
+    }
+
+    .leg-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-row">
+      <span class="app-title">Layer Style Checker</span>
+      <div class="btn-group">
+        <button class="btn btn-ghost" id="btn-cancel">閉じる</button>
+        <button class="btn btn-primary" id="btn-scan">スキャン</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="summary-wrap">
+    <div class="summary-placeholder">スキャンボタンを押して走査を開始します</div>
+  </div>
+
+  <div id="list-header-wrap"></div>
+
+  <ul id="layer-list">
+    <li class="state-box">
+      <div class="state-icon">🔍</div>
+      <div class="state-title">未走査</div>
+      <div class="state-desc">「スキャン」ボタンを押すと<br>現在のページ全体を走査します</div>
+    </li>
+  </ul>
+
+  <footer class="legend">
+    <span class="leg"><span class="leg-dot" style="background:var(--c-ts)"></span>Text style</span>
+    <span class="leg"><span class="leg-dot" style="background:var(--c-tm)"></span>Text 混在</span>
+    <span class="leg"><span class="leg-dot" style="background:var(--c-fill)"></span>Fill</span>
+    <span class="leg"><span class="leg-dot" style="background:var(--c-stroke)"></span>Stroke</span>
+    <span class="leg"><span class="leg-dot" style="background:var(--critical)"></span>Critical</span>
+    <span class="leg"><span class="leg-dot" style="background:var(--warning)"></span>Warning</span>
+  </footer>
+
+  <script>
+    const summaryWrap    = document.getElementById('summary-wrap');
+    const listHeaderWrap = document.getElementById('list-header-wrap');
+    const layerList      = document.getElementById('layer-list');
+
+    const esc = (s) =>
+      String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+
+    const BADGE_CLASS = {
+      'Text style':        'badge-ts',
+      'Text style が混在': 'badge-tm',
+      'Fill color':        'badge-fill',
+      'Stroke color':      'badge-stroke',
+    };
+
+    const getSeverity = (item) =>
+      item.reasons.some((r) => r.severity === 'critical') ? 'critical' : 'warning';
+
+    document.getElementById('btn-scan').addEventListener('click', () => {
+      summaryWrap.innerHTML    = `<div class="summary-loading"><span class="spinner"></span>走査中...</div>`;
+      listHeaderWrap.innerHTML = '';
+      layerList.innerHTML      = '';
+      parent.postMessage({ pluginMessage: { type: 'scan' } }, '*');
+    });
+
+    document.getElementById('btn-cancel').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+    });
+
+    layerList.addEventListener('click', (e) => {
+      const btn = e.target.closest('.jump-btn');
+      if (!(btn instanceof HTMLElement)) return;
+      const nodeId = btn.dataset.nodeId;
+      if (nodeId) {
+        parent.postMessage({ pluginMessage: { type: 'focus-node', nodeId } }, '*');
+      }
+    });
+
+    onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg || msg.type !== 'scan-result') return;
+
+      // Summary
+      const isSelection = msg.scanScope === 'selection';
+      summaryWrap.innerHTML = `
+        <div class="scan-scope">
+          <span class="scope-tag">${isSelection ? '◉ 選択レイヤー' : '□ ページ全体'}</span>
+          をスキャン
+        </div>
+        <div class="summary-grid">
+          <div class="stat">
+            <div class="stat-label">走査レイヤー</div>
+            <div class="stat-num">${msg.scannedCount}</div>
+          </div>
+          <div class="stat is-critical">
+            <div class="stat-label">要修正</div>
+            <div class="stat-num">${msg.criticalCount}</div>
+          </div>
+          <div class="stat is-warning">
+            <div class="stat-label">要確認</div>
+            <div class="stat-num">${msg.warningCount}</div>
+          </div>
+        </div>
+      `;
+
+      // Section header
+      listHeaderWrap.innerHTML = msg.layers.length > 0
+        ? `<div class="list-header">
+            <span class="list-label">問題のあるレイヤー</span>
+            <span class="list-count">${msg.layers.length} 件</span>
+          </div>`
+        : '';
+
+      // Layer items
+      if (msg.layers.length === 0) {
+        layerList.innerHTML = `<li class="state-box">
+          <div class="state-icon">✅</div>
+          <div class="state-title">問題なし</div>
+          <div class="state-desc">${msg.scannedCount} レイヤーを走査しました<br>スタイル未適用は見つかりませんでした</div>
+        </li>`;
+        return;
+      }
+
+      const SEV_LABEL = { critical: '要修正', warning: '要確認' };
+
+      layerList.innerHTML = msg.layers
+        .map((item) => {
+          const sev    = getSeverity(item);
+          const badges = item.reasons
+            .map((r) => `<span class="badge ${BADGE_CLASS[r.label] || 'badge-ts'}">${esc(r.label)}</span>`)
+            .join('');
+
+          return `<li>
+            <div class="card ${sev}">
+              <div class="card-head">
+                <span class="layer-name">${esc(item.name || '(無名)')}</span>
+                <span class="type-pill">${esc(item.nodeType)}</span>
+                <span class="sev-pill ${sev}">${SEV_LABEL[sev]}</span>
+              </div>
+              <div class="layer-path">${esc(item.path)}</div>
+              <div class="card-foot">
+                <div class="badges">${badges}</div>
+                <button class="jump-btn" data-node-id="${esc(item.id)}">移動 →</button>
+              </div>
+            </div>
+          </li>`;
+        })
+        .join('');
+    };
+  </script>
+</body>
+</html>
