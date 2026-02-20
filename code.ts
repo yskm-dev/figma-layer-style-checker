@@ -2,6 +2,7 @@ figma.showUI(__html__, { width: 420, height: 560 });
 
 type UiMessage =
   | { type: 'scan' }
+  | { type: 'set-auto-scan'; enabled: boolean }
   | { type: 'cancel' }
   | { type: 'focus-node'; nodeId: string }
   | {
@@ -1042,6 +1043,46 @@ async function applyBulkStyles(actions: ApplyStyleAction[]): Promise<ApplyBulkRe
   return summary;
 }
 
+let autoScanEnabled = false;
+let isScanRunning = false;
+let hasPendingAutoScan = false;
+
+function postAutoScanState(): void {
+  figma.ui.postMessage({ type: 'auto-scan-state', enabled: autoScanEnabled });
+}
+
+async function runScan(trigger: 'manual' | 'auto'): Promise<void> {
+  if (isScanRunning) {
+    if (trigger === 'auto') {
+      hasPendingAutoScan = true;
+    }
+    return;
+  }
+
+  isScanRunning = true;
+  try {
+    const result = await scanLayers();
+    figma.ui.postMessage({ type: 'scan-result', ...result, trigger });
+    if (trigger === 'manual') {
+      const scopeLabel = result.scanScope === 'selection' ? '選択範囲' : 'ページ全体';
+      figma.notify(`スキャン完了（${scopeLabel}）: 該当レイヤー ${result.layers.length}件`);
+    }
+  } finally {
+    isScanRunning = false;
+    if (hasPendingAutoScan) {
+      hasPendingAutoScan = false;
+      void runScan('auto');
+    }
+  }
+}
+
+figma.on('selectionchange', () => {
+  if (!autoScanEnabled) {
+    return;
+  }
+  void runScan('auto');
+});
+
 figma.ui.onmessage = async (msg: UiMessage) => {
   if (msg.type === 'cancel') {
     figma.closePlugin();
@@ -1049,10 +1090,17 @@ figma.ui.onmessage = async (msg: UiMessage) => {
   }
 
   if (msg.type === 'scan') {
-    const result = await scanLayers();
-    figma.ui.postMessage({ type: 'scan-result', ...result });
-    const scopeLabel = result.scanScope === 'selection' ? '選択範囲' : 'ページ全体';
-    figma.notify(`スキャン完了（${scopeLabel}）: 該当レイヤー ${result.layers.length}件`);
+    await runScan('manual');
+    return;
+  }
+
+  if (msg.type === 'set-auto-scan') {
+    autoScanEnabled = msg.enabled;
+    postAutoScanState();
+    if (autoScanEnabled) {
+      void runScan('auto');
+    }
+    return;
   }
 
   if (msg.type === 'focus-node') {

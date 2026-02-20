@@ -152,6 +152,7 @@ Reason は以下の固定順で表示する。
 ### 8.1 ヘッダー操作
 
 - `スキャン`
+- `自動:ON/OFF`（選択変更時の自動スキャン切替）
 - `一括適用（n）`
 
 ### 8.2 サマリー
@@ -181,6 +182,12 @@ Reason は以下の固定順で表示する。
 - 一括適用ボタン件数を更新
 
 ## 9. 操作仕様（Plugin 側）
+
+### 9.0 スキャン実行トリガー
+
+- 手動: UI の `scan` 受信時にスキャン
+- 自動: `autoScanEnabled === true` のとき、`selectionchange` ごとにスキャン
+- スキャン実行中に自動トリガーが重なった場合は、保留フラグで1回再実行する
 
 ### 9.1 フォーカス移動
 
@@ -217,6 +224,7 @@ Reason は以下の固定順で表示する。
 ### 10.1 UI -> Plugin
 
 - `scan`
+- `set-auto-scan`
 - `cancel`
 - `focus-node`
 - `apply-style`
@@ -225,12 +233,13 @@ Reason は以下の固定順で表示する。
 ### 10.2 Plugin -> UI
 
 - `scan-result`
+- `auto-scan-state`
 - `apply-style-result`
 - `apply-bulk-result`
 
 ## 11. 通知仕様（figma.notify）
 
-- スキャン完了: `スキャン完了（選択範囲|ページ全体）: 該当レイヤー {n}件`
+- スキャン完了（手動実行時のみ）: `スキャン完了（選択範囲|ページ全体）: 該当レイヤー {n}件`
 - 個別適用成功: `スタイルを適用しました`
 - 一括適用: `一括適用: {successLayerCount}レイヤー / {successActions}件を適用`
 - 対象不正時: エラーメッセージ通知

@@ -736,16 +736,60 @@ function applyBulkStyles(actions) {
         return summary;
     });
 }
+let autoScanEnabled = false;
+let isScanRunning = false;
+let hasPendingAutoScan = false;
+function postAutoScanState() {
+    figma.ui.postMessage({ type: 'auto-scan-state', enabled: autoScanEnabled });
+}
+function runScan(trigger) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (isScanRunning) {
+            if (trigger === 'auto') {
+                hasPendingAutoScan = true;
+            }
+            return;
+        }
+        isScanRunning = true;
+        try {
+            const result = yield scanLayers();
+            figma.ui.postMessage(Object.assign(Object.assign({ type: 'scan-result' }, result), { trigger }));
+            if (trigger === 'manual') {
+                const scopeLabel = result.scanScope === 'selection' ? '選択範囲' : 'ページ全体';
+                figma.notify(`スキャン完了（${scopeLabel}）: 該当レイヤー ${result.layers.length}件`);
+            }
+        }
+        finally {
+            isScanRunning = false;
+            if (hasPendingAutoScan) {
+                hasPendingAutoScan = false;
+                void runScan('auto');
+            }
+        }
+    });
+}
+figma.on('selectionchange', () => {
+    if (!autoScanEnabled) {
+        return;
+    }
+    void runScan('auto');
+});
 figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
     if (msg.type === 'cancel') {
         figma.closePlugin();
         return;
     }
     if (msg.type === 'scan') {
-        const result = yield scanLayers();
-        figma.ui.postMessage(Object.assign({ type: 'scan-result' }, result));
-        const scopeLabel = result.scanScope === 'selection' ? '選択範囲' : 'ページ全体';
-        figma.notify(`スキャン完了（${scopeLabel}）: 該当レイヤー ${result.layers.length}件`);
+        yield runScan('manual');
+        return;
+    }
+    if (msg.type === 'set-auto-scan') {
+        autoScanEnabled = msg.enabled;
+        postAutoScanState();
+        if (autoScanEnabled) {
+            void runScan('auto');
+        }
+        return;
     }
     if (msg.type === 'focus-node') {
         yield focusNode(msg.nodeId);
