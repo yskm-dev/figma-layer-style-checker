@@ -4,52 +4,65 @@
   <meta charset="utf-8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --bg:       #F7F8FA;
-      --surface:  #FFFFFF;
-      --border:   #E4E7EC;
-      --text-1:   #101828;
-      --text-2:   #475467;
-      --text-3:   #98A2B3;
+      --font: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'IBM Plex Mono', 'Courier New', monospace;
 
-      /* Severity */
-      --critical:    #DC2626;
-      --critical-bg: #FFF5F5;
-      --critical-bd: #FECACA;
-      --warning:     #D97706;
-      --warning-bg:  #FFFBEB;
-      --warning-bd:  #FDE68A;
+      --bg:         #0C0D10;
+      --surface:    #13151A;
+      --elevated:   #1B1E26;
+      --border:     #2C3040;
+      --border-dim: #232736;
+
+      --text-1: #ECEEF4;
+      --text-2: #9DA5BF;
+      --text-3: #6B7390;
+
+      --accent:      #00D4C8;
+      --accent-bg:   rgba(0, 212, 200, 0.08);
+      --accent-glow: rgba(0, 212, 200, 0.28);
+
+      --critical:    #FF4D5B;
+      --critical-bg: rgba(255, 77, 91, 0.08);
+      --critical-bd: rgba(255, 77, 91, 0.28);
+
+      --warning:    #F5A623;
+      --warning-bg: rgba(245, 166, 35, 0.08);
+      --warning-bd: rgba(245, 166, 35, 0.28);
+
+      --resolved:    #00C97A;
+      --resolved-bg: rgba(0, 201, 122, 0.08);
+      --resolved-bd: rgba(0, 201, 122, 0.28);
 
       /* Reason: Text style */
-      --c-ts:    #1D4ED8;
-      --c-ts-bg: #EFF6FF;
-      --c-ts-bd: #BFDBFE;
+      --c-ts:    #5B9EF5;
+      --c-ts-bg: rgba(91, 158, 245, 0.12);
+      --c-ts-bd: rgba(91, 158, 245, 0.3);
 
       /* Reason: Text style が混在 */
-      --c-tm:    #6D28D9;
-      --c-tm-bg: #F5F3FF;
-      --c-tm-bd: #DDD6FE;
+      --c-tm:    #A78BFA;
+      --c-tm-bg: rgba(167, 139, 250, 0.12);
+      --c-tm-bd: rgba(167, 139, 250, 0.3);
 
       /* Reason: Fill color */
-      --c-fill:    #C2410C;
-      --c-fill-bg: #FFF7ED;
-      --c-fill-bd: #FED7AA;
+      --c-fill:    #f916f1;
+      --c-fill-bg: rgba(249, 22, 249, 0.12);
+      --c-fill-bd: rgba(249, 115, 22, 0.3);
 
       /* Reason: Stroke color */
-      --c-stroke:    #065F46;
-      --c-stroke-bg: #ECFDF5;
-      --c-stroke-bd: #A7F3D0;
+      --c-stroke:    #22D3EE;
+      --c-stroke-bg: rgba(34, 211, 238, 0.12);
+      --c-stroke-bd: rgba(34, 211, 238, 0.3);
     }
 
     html, body {
       height: 100%;
       font-family: var(--font);
-      font-size: 12px;
+      font-size: 14px;
       background: var(--bg);
       color: var(--text-1);
       -webkit-font-smoothing: antialiased;
@@ -61,222 +74,328 @@
       overflow: hidden;
     }
 
-    /* ── Header ───────────────────────────────── */
+    /* ── Animations ──────────────────────────── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scanBlink {
+      0%, 100% { opacity: 0.5; }
+      50%      { opacity: 1; }
+    }
+
+    /* ── Header ──────────────────────────────── */
     .header {
       flex-shrink: 0;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 12px 14px 10px;
+      padding: 11px 14px;
     }
 
     .header-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 5px;
     }
 
     .app-title {
+      font-family: var(--font);
       font-size: 13px;
       font-weight: 700;
       color: var(--text-1);
-      letter-spacing: -0.015em;
+      white-space: nowrap;
     }
 
-    .btn-group { display: flex; gap: 5px; }
+    .btn-group { display: flex; gap: 6px; }
 
     .btn {
       font-family: var(--font);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 11px;
-      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 5px 13px;
+      border-radius: 4px;
       border: 1px solid var(--border);
       cursor: pointer;
       line-height: 1.5;
-      transition: background 0.1s, color 0.1s, border-color 0.1s;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
     }
 
-    .btn-primary { background: var(--text-1); color: #fff; border-color: var(--text-1); }
-    .btn-primary:hover { background: #1d2939; }
-    .btn-primary:active { background: #0d1526; }
-    .btn-primary:disabled { opacity: 0.4; cursor: default; }
-
-    .btn-ghost { background: transparent; color: var(--text-2); }
-    .btn-ghost:hover { background: var(--bg); }
-
-    .header-desc {
-      font-size: 11px;
-      color: var(--text-3);
-      line-height: 1.4;
+    /* Scan button — cyan outline with glow */
+    .btn-primary {
+      background: transparent;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .btn-primary:hover {
+      background: var(--accent-bg);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    .btn-primary:active {
+      background: rgba(0, 212, 200, 0.15);
+    }
+    .btn-primary:disabled {
+      opacity: 0.3;
+      cursor: default;
+      box-shadow: none;
     }
 
-    /* ── Summary ──────────────────────────────── */
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border-color: transparent;
+    }
+    .btn-ghost:hover {
+      color: var(--text-1);
+      background: var(--elevated);
+    }
+
+    .btn-soft {
+      background: var(--elevated);
+      color: var(--text-1);
+      border-color: var(--border);
+    }
+    .btn-soft:hover {
+      background: #20242e;
+      color: var(--text-1);
+      border-color: #3a4055;
+    }
+    .btn-soft:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    /* ── Summary ─────────────────────────────── */
     #summary-wrap {
       flex-shrink: 0;
       border-bottom: 1px solid var(--border);
     }
 
-    .summary-placeholder,
-    .summary-loading {
-      padding: 9px 14px;
-      font-size: 11px;
+    .summary-placeholder {
+      padding: 10px 14px;
+      font-size: 12px;
       color: var(--text-3);
       background: var(--surface);
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+      animation: scanBlink 2.4s ease-in-out infinite;
     }
 
     .summary-loading {
-      color: var(--text-2);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--surface);
       display: flex;
       align-items: center;
       gap: 7px;
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
     }
 
     .spinner {
-      width: 12px; height: 12px;
-      border: 2px solid var(--border);
-      border-top-color: var(--text-1);
+      width: 11px; height: 11px;
+      border: 1.5px solid var(--border);
+      border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 0.5s linear infinite;
+      animation: spin 0.6s linear infinite;
       flex-shrink: 0;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
     .scan-scope {
       display: flex;
       align-items: center;
-      gap: 5px;
-      padding: 5px 14px 0;
+      gap: 6px;
+      padding: 8px 14px 0;
       background: var(--surface);
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text-3);
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-2);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
     .scope-tag {
       display: inline-flex;
       align-items: center;
       gap: 3px;
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 600;
-      background: var(--bg);
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: var(--mono);
+      background: var(--elevated);
       border: 1px solid var(--border);
-      color: var(--text-2);
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: none;
     }
 
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
-      padding: 6px 14px 8px;
+      padding: 8px 14px 10px;
       background: var(--surface);
     }
 
     .stat {
-      padding: 6px 8px;
+      padding: 8px 10px;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 7px;
+      border-top: 2px solid var(--border);
+      border-radius: 4px;
+      position: relative;
     }
 
     .stat-label {
       font-size: 10px;
-      color: var(--text-3);
-      font-weight: 500;
-      margin-bottom: 3px;
+      color: var(--text-2);
+      font-family: var(--mono);
+      font-weight: 400;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
     }
 
     .stat-num {
-      font-size: 19px;
+      font-size: 21px;
       font-weight: 700;
+      font-family: var(--mono);
       line-height: 1;
       color: var(--text-1);
     }
 
+    .stat.is-critical { border-top-color: var(--critical); border-color: var(--critical-bd); background: var(--critical-bg); }
     .stat.is-critical .stat-num { color: var(--critical); }
-    .stat.is-warning  .stat-num { color: var(--warning); }
+
+    .stat.is-warning { border-top-color: var(--warning); border-color: var(--warning-bd); background: var(--warning-bg); }
+    .stat.is-warning .stat-num { color: var(--warning); }
+
+    .stat.is-resolved { border-top-color: var(--resolved); border-color: var(--resolved-bd); background: var(--resolved-bg); }
+    .stat.is-resolved .stat-num { color: var(--resolved); }
 
     /* ── List header ──────────────────────────── */
-    #list-header-wrap {
-      flex-shrink: 0;
-    }
+    #list-header-wrap { flex-shrink: 0; }
 
     .list-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 14px 4px;
+      padding: 9px 14px 4px;
     }
 
     .list-label {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 500;
+      font-family: var(--mono);
       color: var(--text-2);
-      letter-spacing: -0.01em;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
     }
 
     .list-count {
       font-size: 11px;
       font-weight: 700;
-      color: white;
-      background: var(--text-1);
-      padding: 1px 7px;
-      border-radius: 99px;
-      line-height: 1.6;
+      color: var(--text-2);
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      padding: 1px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.04em;
     }
 
     /* ── Layer list ───────────────────────────── */
     #layer-list {
       flex: 1;
       overflow-y: auto;
-      padding: 4px 10px 12px;
+      padding: 6px 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 6px;
       list-style: none;
     }
 
     #layer-list::-webkit-scrollbar { width: 3px; }
-    #layer-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    #layer-list::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
     #layer-list::-webkit-scrollbar-track { background: transparent; }
+
+    /* Staggered card animation */
+    #layer-list > li { animation: cardIn 0.2s ease both; }
+    #layer-list > li:nth-child(2)   { animation-delay:  40ms; }
+    #layer-list > li:nth-child(3)   { animation-delay:  80ms; }
+    #layer-list > li:nth-child(4)   { animation-delay: 120ms; }
+    #layer-list > li:nth-child(5)   { animation-delay: 160ms; }
+    #layer-list > li:nth-child(6)   { animation-delay: 200ms; }
+    #layer-list > li:nth-child(7)   { animation-delay: 240ms; }
+    #layer-list > li:nth-child(n+8) { animation-delay: 280ms; }
 
     /* ── Layer card ───────────────────────────── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-left: 3px solid transparent;
-      border-radius: 8px;
-      padding: 8px 10px;
-      transition: border-color 0.12s;
+      border-left: 2px solid var(--border);
+      border-radius: 4px;
+      padding: 10px 11px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
     }
-    .card:hover { border-color: #c5cad6; }
+
+    .card:hover {
+      background: var(--elevated);
+      border-color: #333844;
+    }
+
     .card.critical {
       border-left-color: var(--critical);
-      background: var(--critical-bg);
       border-color: var(--critical-bd);
+      background: var(--critical-bg);
     }
+    .card.critical:hover {
+      border-left-color: var(--critical);
+      border-color: rgba(255, 77, 91, 0.4);
+      background: rgba(255, 77, 91, 0.12);
+    }
+
     .card.warning {
       border-left-color: var(--warning);
-      background: var(--warning-bg);
       border-color: var(--warning-bd);
+      background: var(--warning-bg);
     }
-    .card.critical:hover { border-left-color: var(--critical); border-color: #f9a8a8; }
-    .card.warning:hover  { border-left-color: var(--warning);  border-color: #fbbf24; }
+    .card.warning:hover {
+      border-left-color: var(--warning);
+      border-color: rgba(245, 166, 35, 0.4);
+      background: rgba(245, 166, 35, 0.12);
+    }
+
+    .card.resolved {
+      border-left-color: var(--resolved);
+      border-color: var(--resolved-bd);
+      background: var(--resolved-bg);
+    }
+    .card.resolved:hover {
+      border-left-color: var(--resolved);
+      border-color: rgba(0, 201, 122, 0.4);
+    }
 
     .card-head {
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 3px;
+      margin-bottom: 5px;
     }
 
     .layer-name {
       flex: 1;
       min-width: 0;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
       color: var(--text-1);
       white-space: nowrap;
       overflow: hidden;
@@ -285,99 +404,200 @@
 
     .type-pill {
       flex-shrink: 0;
-      font-size: 9px;
-      font-weight: 600;
-      color: var(--text-3);
-      background: var(--bg);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-1);
+      background: var(--elevated);
       border: 1px solid var(--border);
       border-radius: 3px;
-      padding: 1px 4px;
-      letter-spacing: 0.03em;
+      padding: 1px 5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
     .layer-path {
-      font-size: 10px;
-      color: var(--text-3);
-      margin-bottom: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-2);
+      margin-bottom: 8px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       line-height: 1.4;
+      letter-spacing: 0.01em;
     }
 
-    .card-foot {
+    /* ── Issue list (カード内の問題リスト) ──── */
+    .issue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .issue-row {
       display: flex;
       align-items: center;
-      gap: 6px;
-      justify-content: space-between;
+      gap: 7px;
+      min-height: 28px;
+      padding: 8px 0;
+      border-top: 1px solid var(--border);
     }
 
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      flex: 1;
-      min-width: 0;
+    .issue-row:first-child {
+      border-top: none;
     }
+
+    .issue-row:last-child {
+      padding-bottom: 0;
+    }
+
+    .card.critical .issue-row { border-color: var(--critical-bd); }
+    .card.warning .issue-row { border-color: var(--warning-bd); }
+    .card.resolved .issue-row { border-color: var(--resolved-bd); }
+
+    /* 候補スタイル名チップ */
+    .issue-val {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-1);
+      background: #1E2438;
+      border: 1px solid #3A4260;
+      border-radius: 4px;
+      padding: 3px 9px;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* 候補なしラベル */
+    .no-cand-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--warning);
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-bd);
+      border-radius: 4px;
+      padding: 3px 10px;
+    }
+
+    /* 適用ボタンを右端に寄せる */
+    .issue-row .apply-btn {
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* テキスト要素は選択しやすいよう text カーソル */
+    .layer-name, .layer-path, .issue-val { cursor: text; }
 
     .badge {
       display: inline-flex;
       align-items: center;
       padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 700;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 500;
       border: 1px solid transparent;
       white-space: nowrap;
-      letter-spacing: 0.01em;
+      letter-spacing: 0.02em;
     }
 
-    .badge-ts     { color: #1E3A8A; background: #BFDBFE; border-color: #93C5FD; }
-    .badge-tm     { color: #3B0764; background: #DDD6FE; border-color: #C4B5FD; }
-    .badge-fill   { color: #7C2D12; background: #FED7AA; border-color: #FDBA74; }
-    .badge-stroke { color: #064E3B; background: #A7F3D0; border-color: #6EE7B7; }
+    .badge-ts     { color: var(--c-ts);     background: var(--c-ts-bg);     border-color: var(--c-ts-bd); }
+    .badge-tm     { color: var(--c-tm);     background: var(--c-tm-bg);     border-color: var(--c-tm-bd); }
+    .badge-fill   { color: var(--c-fill);   background: var(--c-fill-bg);   border-color: var(--c-fill-bd); }
+    .badge-stroke { color: var(--c-stroke); background: var(--c-stroke-bg); border-color: var(--c-stroke-bd); }
+    .badge-ok     { color: var(--resolved); background: var(--resolved-bg); border-color: var(--resolved-bd); }
 
     /* Severity pill */
     .sev-pill {
       flex-shrink: 0;
-      font-size: 9px;
+      font-family: var(--mono);
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 2px 7px;
+      border-radius: 3px;
       border: 1px solid transparent;
     }
     .sev-pill.critical {
       color: var(--critical);
-      background: #FEE2E2;
+      background: var(--critical-bg);
       border-color: var(--critical-bd);
     }
     .sev-pill.warning {
-      color: #92400E;
-      background: #FEF3C7;
+      color: var(--warning);
+      background: var(--warning-bg);
       border-color: var(--warning-bd);
+    }
+    .sev-pill.resolved {
+      color: var(--resolved);
+      background: var(--resolved-bg);
+      border-color: var(--resolved-bd);
     }
 
     .jump-btn {
-      font-family: var(--font);
+      font-family: var(--mono);
       flex-shrink: 0;
-      padding: 4px 10px;
+      padding: 4px 11px;
       font-size: 11px;
       font-weight: 700;
-      color: var(--text-1);
-      background: white;
-      border: 1.5px solid var(--text-1);
-      border-radius: 5px;
+      color: var(--accent);
+      background: var(--accent-bg);
+      border: 1px solid rgba(0, 212, 200, 0.35);
+      border-radius: 3px;
       cursor: pointer;
-      transition: background 0.1s, color 0.1s;
+      transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
+      letter-spacing: 0.04em;
     }
     .jump-btn:hover {
-      background: var(--text-1);
-      color: white;
+      background: rgba(0, 212, 200, 0.14);
+      border-color: rgba(0, 212, 200, 0.6);
+      box-shadow: 0 0 6px rgba(0, 212, 200, 0.2);
     }
 
-    /* ── State boxes (empty / initial / success) ─ */
+    .apply-btn {
+      font-family: var(--font);
+      flex-shrink: 0;
+      padding: 4px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-1);
+      background: var(--elevated);
+      border: 1px solid #3A4260;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+
+    .apply-btn:hover {
+      background: #222840;
+      border-color: #4E587A;
+      color: var(--text-1);
+    }
+
+    .apply-btn:disabled {
+      cursor: default;
+      opacity: 0.4;
+    }
+
+    .apply-btn.applying {
+      color: var(--text-3);
+      background: var(--bg);
+      border-color: var(--border-dim);
+    }
+
+    .apply-btn.applied {
+      color: var(--resolved);
+      background: var(--resolved-bg);
+      border-color: var(--resolved-bd);
+      opacity: 1;
+    }
+
+    /* ── State boxes ─────────────────────────── */
     #layer-list > li.state-box {
       flex: 1;
       display: flex;
@@ -389,34 +609,49 @@
       text-align: center;
     }
 
-    .state-icon  { font-size: 26px; margin-bottom: 4px; }
-    .state-title { font-size: 12px; font-weight: 600; color: var(--text-2); }
-    .state-desc  { font-size: 11px; color: var(--text-3); line-height: 1.6; }
+    .state-icon  { font-size: 28px; margin-bottom: 6px; opacity: 0.8; }
+    .state-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .state-desc {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.7;
+    }
 
-    /* ── Legend ───────────────────────────────── */
+    /* ── Legend ──────────────────────────────── */
     .legend {
       flex-shrink: 0;
       background: var(--surface);
       border-top: 1px solid var(--border);
-      padding: 6px 14px;
+      padding: 6px 13px;
       display: flex;
       flex-wrap: wrap;
       gap: 4px 12px;
+      align-items: center;
     }
 
     .leg {
       display: flex;
       align-items: center;
       gap: 4px;
-      font-size: 10px;
+      font-size: 11px;
+      font-family: var(--mono);
       color: var(--text-2);
+      letter-spacing: 0.04em;
     }
 
     .leg-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
       flex-shrink: 0;
+      opacity: 0.85;
     }
   </style>
 </head>
@@ -426,14 +661,14 @@
     <div class="header-row">
       <span class="app-title">Layer Style Checker</span>
       <div class="btn-group">
-        <button class="btn btn-ghost" id="btn-cancel">閉じる</button>
+        <button class="btn btn-soft" id="btn-apply-all" disabled>一括適用（0）</button>
         <button class="btn btn-primary" id="btn-scan">スキャン</button>
       </div>
     </div>
   </header>
 
   <div id="summary-wrap">
-    <div class="summary-placeholder">スキャンボタンを押して走査を開始します</div>
+    <div class="summary-placeholder">▸ スキャンボタンを押して開始</div>
   </div>
 
   <div id="list-header-wrap"></div>
@@ -441,8 +676,8 @@
   <ul id="layer-list">
     <li class="state-box">
       <div class="state-icon">🔍</div>
-      <div class="state-title">未走査</div>
-      <div class="state-desc">「スキャン」ボタンを押すと<br>現在のページ全体を走査します</div>
+      <div class="state-title">未スキャン</div>
+      <div class="state-desc">「スキャン」ボタンを押すと<br>現在のページ全体をスキャンします</div>
     </li>
   </ul>
 
@@ -451,14 +686,16 @@
     <span class="leg"><span class="leg-dot" style="background:var(--c-tm)"></span>Text 混在</span>
     <span class="leg"><span class="leg-dot" style="background:var(--c-fill)"></span>Fill</span>
     <span class="leg"><span class="leg-dot" style="background:var(--c-stroke)"></span>Stroke</span>
-    <span class="leg"><span class="leg-dot" style="background:var(--critical)"></span>Critical</span>
-    <span class="leg"><span class="leg-dot" style="background:var(--warning)"></span>Warning</span>
+    <span class="leg"><span class="leg-dot" style="background:var(--critical)"></span>要修正</span>
+    <span class="leg"><span class="leg-dot" style="background:var(--warning)"></span>要確認</span>
   </footer>
 
   <script>
-    const summaryWrap    = document.getElementById('summary-wrap');
+  (function () {
+    const summaryWrap = document.getElementById('summary-wrap');
     const listHeaderWrap = document.getElementById('list-header-wrap');
-    const layerList      = document.getElementById('layer-list');
+    const layerList = document.getElementById('layer-list');
+    const btnApplyAll = document.getElementById('btn-apply-all');
 
     const esc = (s) =>
       String(s)
@@ -469,40 +706,115 @@
         .replaceAll("'", '&#39;');
 
     const BADGE_CLASS = {
-      'Text style':        'badge-ts',
+      'Text style': 'badge-ts',
       'Text style が混在': 'badge-tm',
-      'Fill color':        'badge-fill',
-      'Stroke color':      'badge-stroke',
+      'Fill color': 'badge-fill',
+      'Stroke color': 'badge-stroke',
     };
 
     const getSeverity = (item) =>
       item.reasons.some((r) => r.severity === 'critical') ? 'critical' : 'warning';
 
-    document.getElementById('btn-scan').addEventListener('click', () => {
-      summaryWrap.innerHTML    = `<div class="summary-loading"><span class="spinner"></span>走査中...</div>`;
-      listHeaderWrap.innerHTML = '';
-      layerList.innerHTML      = '';
-      parent.postMessage({ pluginMessage: { type: 'scan' } }, '*');
-    });
+    const STYLE_KIND_LABEL = {
+      text: 'Text',
+      fill: 'Fill',
+      stroke: 'Stroke',
+    };
 
-    document.getElementById('btn-cancel').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
-    });
+    const REASON_LABEL_BY_KIND = {
+      text: 'Text style',
+      fill: 'Fill color',
+      stroke: 'Stroke color',
+    };
 
-    layerList.addEventListener('click', (e) => {
-      const btn = e.target.closest('.jump-btn');
-      if (!(btn instanceof HTMLElement)) return;
-      const nodeId = btn.dataset.nodeId;
-      if (nodeId) {
-        parent.postMessage({ pluginMessage: { type: 'focus-node', nodeId } }, '*');
+    const LABEL_TO_KIND = {
+      'Text style': 'text',
+      'Text style が混在': 'text',
+      'Fill color': 'fill',
+      'Stroke color': 'stroke',
+    };
+
+    const pendingApplyLabelMap = new Map();
+    let currentResult = null;
+
+    const getApplyButtonKey = (nodeId, kind, styleId) => `${nodeId}::${kind}::${styleId}`;
+
+    const getApplyButtonSelector = (nodeId, kind, styleId) =>
+      `.apply-btn[data-node-id="${CSS.escape(nodeId)}"][data-kind="${CSS.escape(kind)}"][data-style-id="${CSS.escape(styleId)}"]`;
+
+    const recalcCounts = (result) => {
+      let criticalCount = 0;
+      let warningCount = 0;
+
+      for (const layer of result.layers) {
+        for (const reason of layer.reasons) {
+          if (reason.severity === 'critical') criticalCount += 1;
+          if (reason.severity === 'warning') warningCount += 1;
+        }
       }
-    });
 
-    onmessage = (event) => {
-      const msg = event.data.pluginMessage;
-      if (!msg || msg.type !== 'scan-result') return;
+      result.criticalCount = criticalCount;
+      result.warningCount = warningCount;
+    };
 
-      // Summary
+    const getBulkTargets = (result) => {
+      if (!result || !Array.isArray(result.layers)) {
+        return { actions: [], layerCount: 0 };
+      }
+
+      const actions = [];
+      for (const layer of result.layers) {
+        if (!Array.isArray(layer.reasons) || layer.reasons.length === 0) {
+          continue;
+        }
+
+        if (!Array.isArray(layer.suggestedStyles) || layer.suggestedStyles.length === 0) {
+          continue;
+        }
+
+        for (const suggested of layer.suggestedStyles) {
+          actions.push({
+            nodeId: layer.id,
+            kind: suggested.kind,
+            styleId: suggested.styleId,
+          });
+        }
+      }
+
+      const layerCount = new Set(actions.map((action) => action.nodeId)).size;
+      return { actions, layerCount };
+    };
+
+    const updateBulkApplyButton = () => {
+      const { layerCount } = getBulkTargets(currentResult);
+      btnApplyAll.textContent = `一括適用（${layerCount}）`;
+      btnApplyAll.disabled = layerCount === 0;
+    };
+
+    const applyResultToCurrent = (result) => {
+      if (!result.ok || !currentResult) {
+        return;
+      }
+
+      const reasonLabel = REASON_LABEL_BY_KIND[result.kind];
+      currentResult = {
+        ...currentResult,
+        layers: currentResult.layers.map((layer) => {
+          if (layer.id !== result.nodeId) return layer;
+          return {
+            ...layer,
+            reasons: layer.reasons.filter((r) => r.label !== reasonLabel),
+            suggestedStyles: (layer.suggestedStyles || []).filter(
+              (s) => !(s.kind === result.kind && s.styleId === result.styleId)
+            ),
+          };
+        }),
+      };
+    };
+
+    const renderFromResult = (msg) => {
+      const hasOpenIssues = msg.layers.some((layer) => layer.reasons.length > 0);
+
       const isSelection = msg.scanScope === 'selection';
       summaryWrap.innerHTML = `
         <div class="scan-scope">
@@ -511,10 +823,10 @@
         </div>
         <div class="summary-grid">
           <div class="stat">
-            <div class="stat-label">走査レイヤー</div>
+            <div class="stat-label">スキャンレイヤー</div>
             <div class="stat-num">${msg.scannedCount}</div>
           </div>
-          <div class="stat is-critical">
+          <div class="stat ${msg.criticalCount === 0 ? 'is-resolved' : 'is-critical'}">
             <div class="stat-label">要修正</div>
             <div class="stat-num">${msg.criticalCount}</div>
           </div>
@@ -525,50 +837,237 @@
         </div>
       `;
 
-      // Section header
-      listHeaderWrap.innerHTML = msg.layers.length > 0
-        ? `<div class="list-header">
+      if (msg.layers.length === 0) {
+        listHeaderWrap.innerHTML = '';
+      } else if (hasOpenIssues) {
+        const issueCount = msg.layers.filter((layer) => layer.reasons.length > 0).length;
+        listHeaderWrap.innerHTML = `<div class="list-header">
             <span class="list-label">問題のあるレイヤー</span>
-            <span class="list-count">${msg.layers.length} 件</span>
-          </div>`
-        : '';
+            <span class="list-count">${issueCount} 件</span>
+          </div>`;
+      } else {
+        listHeaderWrap.innerHTML = `<div class="list-header">
+            <span class="list-label" style="color:var(--resolved);">問題はすべて解消済みです</span>
+            <span class="list-count" style="color:var(--resolved);border-color:var(--resolved-bd);">${msg.layers.length} 件</span>
+          </div>`;
+      }
 
-      // Layer items
       if (msg.layers.length === 0) {
         layerList.innerHTML = `<li class="state-box">
           <div class="state-icon">✅</div>
           <div class="state-title">問題なし</div>
-          <div class="state-desc">${msg.scannedCount} レイヤーを走査しました<br>スタイル未適用は見つかりませんでした</div>
+          <div class="state-desc">${msg.scannedCount} レイヤーをスキャンしました<br>スタイル未適用は見つかりませんでした</div>
         </li>`;
         return;
       }
 
-      const SEV_LABEL = { critical: '要修正', warning: '要確認' };
+      const SEV_LABEL = { critical: '要修正', warning: '要確認', resolved: '解消' };
 
       layerList.innerHTML = msg.layers
         .map((item) => {
-          const sev    = getSeverity(item);
-          const badges = item.reasons
-            .map((r) => `<span class="badge ${BADGE_CLASS[r.label] || 'badge-ts'}">${esc(r.label)}</span>`)
-            .join('');
+          const hasIssues = item.reasons.length > 0;
+          const sev = hasIssues ? getSeverity(item) : 'resolved';
+
+          // 問題ごとに1行: [badge] [候補名] [適用ボタン]
+          const issueRows = hasIssues
+            ? (() => {
+                const styleByKind = new Map(
+                  (item.suggestedStyles || []).map((s) => [s.kind, s])
+                );
+                return item.reasons
+                  .map((r) => {
+                    const kind = LABEL_TO_KIND[r.label];
+                    const suggested = kind ? styleByKind.get(kind) : null;
+                    const badgeClass = BADGE_CLASS[r.label] || 'badge-ts';
+                    if (suggested) {
+                      return `<div class="issue-row">
+                        <span class="badge ${badgeClass}">${esc(r.label)}</span>
+                        <span class="issue-val" title="${esc(suggested.styleName)}">${esc(suggested.styleName)}</span>
+                        <button
+                          class="apply-btn"
+                          data-node-id="${esc(item.id)}"
+                          data-kind="${esc(suggested.kind)}"
+                          data-style-id="${esc(suggested.styleId)}"
+                          title="${esc(suggested.styleName)}"
+                        >${esc(STYLE_KIND_LABEL[suggested.kind] || suggested.kind)}適用</button>
+                      </div>`;
+                    }
+                    return `<div class="issue-row">
+                      <span class="badge ${badgeClass}">${esc(r.label)}</span>
+                      <span class="no-cand-label">候補なし</span>
+                    </div>`;
+                  })
+                  .join('');
+              })()
+            : `<div class="issue-row"><span class="badge badge-ok">問題なし</span></div>`;
 
           return `<li>
-            <div class="card ${sev}">
+            <div class="card ${sev}" data-node-id="${esc(item.id)}">
               <div class="card-head">
                 <span class="layer-name">${esc(item.name || '(無名)')}</span>
                 <span class="type-pill">${esc(item.nodeType)}</span>
                 <span class="sev-pill ${sev}">${SEV_LABEL[sev]}</span>
               </div>
               <div class="layer-path">${esc(item.path)}</div>
-              <div class="card-foot">
-                <div class="badges">${badges}</div>
-                <button class="jump-btn" data-node-id="${esc(item.id)}">移動 →</button>
-              </div>
+              <div class="issue-list">${issueRows}</div>
             </div>
           </li>`;
         })
         .join('');
     };
+
+    document.getElementById('btn-scan').addEventListener('click', () => {
+      currentResult = null;
+      summaryWrap.innerHTML = `<div class="summary-loading"><span class="spinner"></span>スキャン中...</div>`;
+      listHeaderWrap.innerHTML = '';
+      layerList.innerHTML = '';
+      parent.postMessage({ pluginMessage: { type: 'scan' } }, '*');
+      updateBulkApplyButton();
+    });
+
+    btnApplyAll.addEventListener('click', () => {
+      if (!currentResult) {
+        return;
+      }
+
+      const { actions, layerCount } = getBulkTargets(currentResult);
+      if (actions.length === 0 || layerCount === 0) {
+        updateBulkApplyButton();
+        return;
+      }
+
+      btnApplyAll.disabled = true;
+      btnApplyAll.textContent = `一括適用中...（${layerCount}）`;
+      parent.postMessage({ pluginMessage: { type: 'apply-bulk', actions } }, '*');
+    });
+
+    layerList.addEventListener('click', (e) => {
+      // 適用ボタンのクリック
+      const applyBtn = e.target.closest('.apply-btn');
+      if (applyBtn instanceof HTMLElement) {
+        const nodeId = applyBtn.dataset.nodeId;
+        const kind = applyBtn.dataset.kind;
+        const styleId = applyBtn.dataset.styleId;
+        if (nodeId && styleId && (kind === 'text' || kind === 'fill' || kind === 'stroke')) {
+          const key = getApplyButtonKey(nodeId, kind, styleId);
+          pendingApplyLabelMap.set(key, applyBtn.textContent || `${STYLE_KIND_LABEL[kind]}適用`);
+          applyBtn.disabled = true;
+          applyBtn.classList.add('applying');
+          applyBtn.textContent = '適用中...';
+          parent.postMessage({ pluginMessage: { type: 'apply-style', nodeId, kind, styleId } }, '*');
+        }
+        return; // 適用ボタンクリック時はレイヤー移動しない
+      }
+
+      // テキスト選択中はレイヤー移動しない
+      const sel = window.getSelection();
+      if (sel && sel.toString().length > 0) return;
+
+      // カードクリック → レイヤーに移動
+      const card = e.target.closest('.card');
+      if (!(card instanceof HTMLElement)) return;
+      const nodeId = card.dataset.nodeId;
+      if (nodeId) {
+        parent.postMessage({ pluginMessage: { type: 'focus-node', nodeId } }, '*');
+      }
+    });
+
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+
+      if (msg.type === 'apply-style-result') {
+        const key = getApplyButtonKey(msg.nodeId, msg.kind, msg.styleId);
+        const selector = getApplyButtonSelector(msg.nodeId, msg.kind, msg.styleId);
+        const btn = layerList.querySelector(selector);
+
+        if (btn instanceof HTMLButtonElement) {
+          btn.classList.remove('applying');
+
+          if (msg.ok) {
+            // issue-row を削除し、カードを外科的に更新（全リスト再描画なし）
+            const row = btn.closest('.issue-row');
+            const cardEl = btn.closest('.card'); // row 削除前に参照取得
+            if (row) row.remove();
+
+            if (cardEl instanceof HTMLElement) {
+              const issueList = cardEl.querySelector('.issue-list');
+              const remaining = issueList ? issueList.querySelectorAll('.issue-row').length : 0;
+              if (remaining === 0) {
+                // すべて解決済み: カード外観を更新
+                cardEl.className = 'card resolved';
+                const sevPill = cardEl.querySelector('.sev-pill');
+                if (sevPill) {
+                  sevPill.className = 'sev-pill resolved';
+                  sevPill.textContent = '解消';
+                }
+                if (issueList) {
+                  issueList.innerHTML = '<div class="issue-row"><span class="badge badge-ok">問題なし</span></div>';
+                }
+              }
+            }
+          } else {
+            const original = pendingApplyLabelMap.get(key) || `${STYLE_KIND_LABEL[msg.kind] || msg.kind}適用`;
+            btn.disabled = false;
+            btn.textContent = original;
+          }
+        }
+
+        if (msg.ok && currentResult) {
+          applyResultToCurrent(msg);
+          recalcCounts(currentResult);
+
+          // サマリーの数値だけ更新（リスト全体は再描画しない）
+          const grid = summaryWrap.querySelector('.summary-grid');
+          if (grid) {
+            const stats = grid.querySelectorAll('.stat');
+            if (stats.length >= 3) {
+              stats[1].className = `stat ${currentResult.criticalCount === 0 ? 'is-resolved' : 'is-critical'}`;
+              const critNum = stats[1].querySelector('.stat-num');
+              if (critNum) critNum.textContent = currentResult.criticalCount;
+              const warnNum = stats[2].querySelector('.stat-num');
+              if (warnNum) warnNum.textContent = currentResult.warningCount;
+            }
+          }
+
+          updateBulkApplyButton();
+        }
+
+        pendingApplyLabelMap.delete(key);
+        return;
+      }
+
+      if (msg.type === 'apply-bulk-result') {
+        if (currentResult && Array.isArray(msg.results)) {
+          for (const result of msg.results) {
+            applyResultToCurrent(result);
+          }
+
+          recalcCounts(currentResult);
+          renderFromResult(currentResult);
+          updateBulkApplyButton();
+        }
+
+        return;
+      }
+
+      if (msg.type !== 'scan-result') return;
+
+      currentResult = {
+        scannedCount: msg.scannedCount,
+        layers: Array.isArray(msg.layers) ? msg.layers : [],
+        textReasonCount: msg.textReasonCount,
+        colorReasonCount: msg.colorReasonCount,
+        criticalCount: msg.criticalCount,
+        warningCount: msg.warningCount,
+        scanScope: msg.scanScope,
+      };
+
+      recalcCounts(currentResult);
+      renderFromResult(currentResult);
+      updateBulkApplyButton();
+    };
+  })();
   </script>
 </body>
 </html>
