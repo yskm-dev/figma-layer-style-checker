@@ -23,7 +23,7 @@ Figma プラグイン。現在のページまたは選択範囲をスキャン�
 
 - `Text style が混在` が成立した Text ノードでは `Text style` は出しません。
 - Fill / Stroke は `visible !== false` かつ `opacity > 0` の色系 Paint のみ判定します。
-- style 候補が1件も見つからないレイヤーは、全 reason を `warning` に降格します。
+- 各 reason（`Text style` / `Fill color` / `Stroke color`）は、対応する候補がない場合に `warning` へ降格します。
 
 ## スキャン範囲
 

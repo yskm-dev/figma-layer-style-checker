@@ -835,22 +835,32 @@ function postProcessReasons(
   reasons: ReasonItem[],
   suggestedStyles: SuggestedStyleAction[]
 ): void {
-  if (reasons.length === 0 || suggestedStyles.length > 0) {
+  if (reasons.length === 0) {
     return;
   }
 
-  const hasDetail = reasons.some(
-    (reason) => typeof reason.detail === 'string' && reason.detail.length > 0
-  );
-  const hasTextMixedReason = reasons.some(
-    (reason) => reason.label === 'Text style が混在'
-  );
-
-  if (!hasDetail && !hasTextMixedReason && reasons[0]) {
-    reasons[0].detail = 'スタイルの候補がありません';
-  }
-
+  const suggestedKindSet = new Set(suggestedStyles.map((style) => style.kind));
   for (const reason of reasons) {
+    const kind =
+      reason.label === 'Text style'
+        ? 'text'
+        : reason.label === 'Fill color'
+          ? 'fill'
+          : reason.label === 'Stroke color'
+            ? 'stroke'
+            : null;
+
+    if (!kind) {
+      continue;
+    }
+
+    if (suggestedKindSet.has(kind)) {
+      continue;
+    }
+
+    if (typeof reason.detail !== 'string' || reason.detail.length === 0) {
+      reason.detail = 'スタイルの候補がありません';
+    }
     reason.severity = 'warning';
   }
 }

@@ -108,15 +108,29 @@ Reason は以下の固定順で表示する。
 
 ### 6.2 候補なし detail
 
-条件: `reasons.length > 0` かつ `suggestedStyles.length === 0`
+対象 reason:
 
-- 既存 detail がなく、かつ `Text style が混在` を含まない場合のみ、先頭 reason に `スタイルの候補がありません` を設定
+- `Text style`
+- `Fill color`
+- `Stroke color`
+
+上記 reason について、対応 kind（`text` / `fill` / `stroke`）の候補がない場合:
+
+- 既存 detail がなければ `スタイルの候補がありません` を設定
 
 ### 6.3 候補なし時の重要度降格
 
-条件: `reasons.length > 0` かつ `suggestedStyles.length === 0`
+対象 reason:
 
-- 当該レイヤーの全 reason の `severity` を `warning` に変更
+- `Text style`
+- `Fill color`
+- `Stroke color`
+
+上記 reason について、対応 kind の候補がない場合のみ `severity` を `warning` に変更する。
+
+補足:
+
+- `Text style が混在` はこの後処理の対象外（元の `warning` のまま）
 
 ## 7. スキャン結果データ
 
