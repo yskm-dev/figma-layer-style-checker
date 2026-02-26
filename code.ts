@@ -1,8 +1,8 @@
-figma.showUI(__html__, { width: 420, height: 560 });
+figma.showUI(__html__, { width: 340, height: 560 });
 
 type UiMessage =
   | { type: 'scan' }
-  | { type: 'set-auto-scan'; enabled: boolean }
+  | { type: 'set-auto-scan'; enabled: boolean; initial?: boolean }
   | { type: 'cancel' }
   | { type: 'focus-node'; nodeId: string }
   | {
@@ -262,6 +262,24 @@ function normalizeTextDecoration(value: unknown): TextDecoration {
   return 'NONE';
 }
 
+const WEIGHT_MAP: ReadonlyArray<{ token: string; weight: number }> = [
+  { token: 'thin', weight: 100 },
+  { token: 'extra light', weight: 200 },
+  { token: 'ultra light', weight: 200 },
+  { token: 'light', weight: 300 },
+  { token: 'book', weight: 400 },
+  { token: 'regular', weight: 400 },
+  { token: 'normal', weight: 400 },
+  { token: 'medium', weight: 500 },
+  { token: 'semi bold', weight: 600 },
+  { token: 'demi bold', weight: 600 },
+  { token: 'bold', weight: 700 },
+  { token: 'extra bold', weight: 800 },
+  { token: 'ultra bold', weight: 800 },
+  { token: 'black', weight: 900 },
+  { token: 'heavy', weight: 900 },
+];
+
 function normalizeFontStyleMeta(styleName: string): {
   styleKey: string;
   weight: number | null;
@@ -271,39 +289,13 @@ function normalizeFontStyleMeta(styleName: string): {
   const isItalic = /italic|oblique/.test(lower);
   const keySource = lower.replace(/italic|oblique/g, '').replace(/\s+/g, ' ').trim();
 
-  const weightMap: Array<{ token: string; weight: number }> = [
-    { token: 'thin', weight: 100 },
-    { token: 'extra light', weight: 200 },
-    { token: 'ultra light', weight: 200 },
-    { token: 'light', weight: 300 },
-    { token: 'book', weight: 400 },
-    { token: 'regular', weight: 400 },
-    { token: 'normal', weight: 400 },
-    { token: 'medium', weight: 500 },
-    { token: 'semi bold', weight: 600 },
-    { token: 'demi bold', weight: 600 },
-    { token: 'bold', weight: 700 },
-    { token: 'extra bold', weight: 800 },
-    { token: 'ultra bold', weight: 800 },
-    { token: 'black', weight: 900 },
-    { token: 'heavy', weight: 900 }
-  ];
-
-  for (const item of weightMap) {
+  for (const item of WEIGHT_MAP) {
     if (keySource.includes(item.token)) {
-      return {
-        styleKey: keySource,
-        weight: item.weight,
-        isItalic
-      };
+      return { styleKey: keySource, weight: item.weight, isItalic };
     }
   }
 
-  return {
-    styleKey: keySource,
-    weight: null,
-    isItalic
-  };
+  return { styleKey: keySource, weight: null, isItalic };
 }
 
 function resolveLineHeightPx(lineHeight: unknown, fontSize: number): number | null {
@@ -589,34 +581,37 @@ function getTextNodeSignature(
   return base;
 }
 
-function getMatchingPaintStyle(
-  paints: readonly Paint[],
-  paintStyles: readonly PaintStyle[]
-): PaintStyle | null {
+// ── スキャン前に1回だけ構築するスタイルインデックス ─────────────────────
+
+function buildPaintStyleIndex(paintStyles: readonly PaintStyle[]): Map<string, PaintStyle> {
+  const index = new Map<string, PaintStyle>();
   for (const style of paintStyles) {
-    if (paintsEqual(paints, style.paints)) {
-      return style;
+    const key = JSON.stringify(style.paints.map(normalizePaint));
+    if (!index.has(key)) {
+      index.set(key, style);
     }
   }
-  return null;
+  return index;
 }
 
-function getMatchingTextStyle(
-  node: TextNode,
-  textStyles: readonly TextStyle[]
-): TextStyle | null {
-  const nodeSignature = getTextNodeSignature(node);
-  const nodeSignatureIgnoringFills = getTextNodeSignature(node, { ignoreFills: true });
+function getMatchingPaintStyle(
+  paints: readonly Paint[],
+  paintStyleIndex: Map<string, PaintStyle>
+): PaintStyle | null {
+  const key = JSON.stringify(paints.map(normalizePaint));
+  return paintStyleIndex.get(key) ?? null;
+}
 
-  if (!nodeSignature && !nodeSignatureIgnoringFills) {
-    return null;
-  }
+type TextStyleEntry = {
+  style: TextStyle;
+  signature: TextSignature | null;
+  signatureIgnoringFills: TextSignature | null;
+};
 
-  let fallbackMatch: TextStyle | null = null;
-
-  for (const style of textStyles) {
+function buildTextStyleEntries(textStyles: readonly TextStyle[]): TextStyleEntry[] {
+  return textStyles.map((style) => {
     const attrs = getTextStyleAttrs(style);
-    const styleSignature = createTextSignature({
+    const input = {
       fontName: attrs.fontName,
       fontSize: attrs.fontSize,
       lineHeight: attrs.lineHeight,
@@ -627,40 +622,40 @@ function getMatchingTextStyle(
       paragraphSpacing: attrs.paragraphSpacing,
       listSpacing: attrs.listSpacing,
       fills: attrs.fills
-    });
+    };
+    return {
+      style,
+      signature: createTextSignature(input),
+      signatureIgnoringFills: createTextSignature(input, { ignoreFills: true })
+    };
+  });
+}
 
-    if (
-      nodeSignature &&
-      styleSignature &&
-      sameTextSignature(styleSignature, nodeSignature)
-    ) {
-      return style;
+function getMatchingTextStyle(
+  node: TextNode,
+  textStyleEntries: TextStyleEntry[]
+): TextStyle | null {
+  const nodeSignature = getTextNodeSignature(node);
+  const nodeSignatureIgnoringFills = getTextNodeSignature(node, { ignoreFills: true });
+
+  if (!nodeSignature && !nodeSignatureIgnoringFills) {
+    return null;
+  }
+
+  let fallbackMatch: TextStyle | null = null;
+
+  for (const entry of textStyleEntries) {
+    if (nodeSignature && entry.signature && sameTextSignature(entry.signature, nodeSignature)) {
+      return entry.style;
     }
 
-    if (nodeSignatureIgnoringFills) {
-      const styleSignatureIgnoringFills = createTextSignature(
-        {
-          fontName: attrs.fontName,
-          fontSize: attrs.fontSize,
-          lineHeight: attrs.lineHeight,
-          letterSpacing: attrs.letterSpacing,
-          textCase: attrs.textCase,
-          textDecoration: attrs.textDecoration,
-          paragraphIndent: attrs.paragraphIndent,
-          paragraphSpacing: attrs.paragraphSpacing,
-          listSpacing: attrs.listSpacing,
-          fills: attrs.fills
-        },
-        { ignoreFills: true }
-      );
-
-      if (
-        styleSignatureIgnoringFills &&
-        sameTextSignature(styleSignatureIgnoringFills, nodeSignatureIgnoringFills) &&
-        !fallbackMatch
-      ) {
-        fallbackMatch = style;
-      }
+    if (
+      nodeSignatureIgnoringFills &&
+      entry.signatureIgnoringFills &&
+      sameTextSignature(entry.signatureIgnoringFills, nodeSignatureIgnoringFills) &&
+      !fallbackMatch
+    ) {
+      fallbackMatch = entry.style;
     }
   }
 
@@ -698,42 +693,9 @@ function hasColorPaints(paints: readonly Paint[]): boolean {
   );
 }
 
-function getColorStyleReasons(node: SceneNode): ReasonItem[] {
-  const reasons: ReasonItem[] = [];
-
-  if ('fills' in node && 'fillStyleId' in node) {
-    const fills = getPaintArray(node.fills);
-    const fillStyleId = node.fillStyleId;
-
-    if (fills && fills.length > 0 && hasColorPaints(fills)) {
-      if (isMissingStyleId(fillStyleId)) {
-        reasons.push({ label: 'Fill color', severity: 'critical' });
-      }
-    }
-  }
-
-  if ('strokes' in node && 'strokeStyleId' in node) {
-    const strokes = getPaintArray(node.strokes);
-    const strokeStyleId = node.strokeStyleId;
-
-    if (strokes && strokes.length > 0 && hasColorPaints(strokes)) {
-      if (isMissingStyleId(strokeStyleId)) {
-        reasons.push({ label: 'Stroke color', severity: 'critical' });
-      }
-    }
-  }
-
-  return reasons;
-}
-
-function getTargetNodes(): { nodes: SceneNode[]; scanScope: 'selection' | 'page' } {
-  const selection = figma.currentPage.selection;
-  if (selection.length === 0) {
-    return { nodes: figma.currentPage.findAll(() => true), scanScope: 'page' };
-  }
-
+function getTargetNodes(): { nodes: SceneNode[] } {
   const nodeSet = new Set<SceneNode>();
-  for (const node of selection) {
+  for (const node of figma.currentPage.selection) {
     nodeSet.add(node);
     if ('findAll' in node) {
       for (const child of (node as ChildrenMixin).findAll(() => true)) {
@@ -741,14 +703,14 @@ function getTargetNodes(): { nodes: SceneNode[]; scanScope: 'selection' | 'page'
       }
     }
   }
-  return { nodes: Array.from(nodeSet), scanScope: 'selection' };
+  return { nodes: Array.from(nodeSet) };
 }
 
 // ── スキャン：各ノードの分析関数 ─────────────────────────────────────────
 
 function analyzeTextNode(
   node: TextNode,
-  textStyles: readonly TextStyle[]
+  textStyleEntries: TextStyleEntry[]
 ): { reasons: ReasonItem[]; suggestedStyles: SuggestedStyleAction[] } {
   const reasons: ReasonItem[] = [];
   const suggestedStyles: SuggestedStyleAction[] = [];
@@ -759,14 +721,12 @@ function analyzeTextNode(
   if (hasMixedTextStyle) {
     reasons.push({ label: 'Text style が混在', severity: 'warning' });
   } else if (node.textStyleId === '') {
-    reasons.push({ label: 'Text style', severity: 'critical' });
+    const textReason: ReasonItem = { label: 'Text style', severity: 'critical' };
+    reasons.push(textReason);
 
-    const textStyle = getMatchingTextStyle(node, textStyles);
+    const textStyle = getMatchingTextStyle(node, textStyleEntries);
     if (textStyle) {
-      const textReason = reasons.find((r) => r.label === 'Text style');
-      if (textReason) {
-        textReason.detail = `候補あり （text-style: ${textStyle.name}）`;
-      }
+      textReason.detail = `候補あり （text-style: ${textStyle.name}）`;
       suggestedStyles.push({
         kind: 'text',
         styleId: textStyle.id,
@@ -780,51 +740,33 @@ function analyzeTextNode(
 
 function analyzeColorNode(
   node: SceneNode,
-  paintStyles: readonly PaintStyle[]
+  paintStyleIndex: Map<string, PaintStyle>
 ): { reasons: ReasonItem[]; suggestedStyles: SuggestedStyleAction[] } {
-  const reasons = getColorStyleReasons(node);
+  const reasons: ReasonItem[] = [];
   const suggestedStyles: SuggestedStyleAction[] = [];
 
-  if (reasons.length === 0) {
-    return { reasons, suggestedStyles };
-  }
-
-  if ('fills' in node && 'fillStyleId' in node && isMissingStyleId(node.fillStyleId)) {
+  if ('fills' in node && 'fillStyleId' in node) {
     const fills = getPaintArray(node.fills);
-    if (fills && fills.length > 0 && hasColorPaints(fills)) {
-      const fillStyle = getMatchingPaintStyle(fills, paintStyles);
+    if (fills && fills.length > 0 && hasColorPaints(fills) && isMissingStyleId(node.fillStyleId)) {
+      const fillReason: ReasonItem = { label: 'Fill color', severity: 'critical' };
+      reasons.push(fillReason);
+      const fillStyle = getMatchingPaintStyle(fills, paintStyleIndex);
       if (fillStyle) {
-        const fillReason = reasons.find((r) => r.label === 'Fill color');
-        if (fillReason) {
-          fillReason.detail = `候補あり （fill: ${fillStyle.name}）`;
-        }
-        suggestedStyles.push({
-          kind: 'fill',
-          styleId: fillStyle.id,
-          styleName: fillStyle.name
-        });
+        fillReason.detail = `候補あり （fill: ${fillStyle.name}）`;
+        suggestedStyles.push({ kind: 'fill', styleId: fillStyle.id, styleName: fillStyle.name });
       }
     }
   }
 
-  if (
-    'strokes' in node &&
-    'strokeStyleId' in node &&
-    isMissingStyleId(node.strokeStyleId)
-  ) {
+  if ('strokes' in node && 'strokeStyleId' in node) {
     const strokes = getPaintArray(node.strokes);
-    if (strokes && strokes.length > 0 && hasColorPaints(strokes)) {
-      const strokeStyle = getMatchingPaintStyle(strokes, paintStyles);
+    if (strokes && strokes.length > 0 && hasColorPaints(strokes) && isMissingStyleId(node.strokeStyleId)) {
+      const strokeReason: ReasonItem = { label: 'Stroke color', severity: 'critical' };
+      reasons.push(strokeReason);
+      const strokeStyle = getMatchingPaintStyle(strokes, paintStyleIndex);
       if (strokeStyle) {
-        const strokeReason = reasons.find((r) => r.label === 'Stroke color');
-        if (strokeReason) {
-          strokeReason.detail = `候補あり （stroke: ${strokeStyle.name}）`;
-        }
-        suggestedStyles.push({
-          kind: 'stroke',
-          styleId: strokeStyle.id,
-          styleName: strokeStyle.name
-        });
+        strokeReason.detail = `候補あり （stroke: ${strokeStyle.name}）`;
+        suggestedStyles.push({ kind: 'stroke', styleId: strokeStyle.id, styleName: strokeStyle.name });
       }
     }
   }
@@ -873,11 +815,14 @@ async function scanLayers(): Promise<{
   colorReasonCount: number;
   criticalCount: number;
   warningCount: number;
-  scanScope: 'selection' | 'page';
 }> {
-  const { nodes, scanScope } = getTargetNodes();
-  const paintStyles = await figma.getLocalPaintStylesAsync();
-  const textStyles = await figma.getLocalTextStylesAsync();
+  const { nodes } = getTargetNodes();
+  const [paintStyles, textStyles] = await Promise.all([
+    figma.getLocalPaintStylesAsync(),
+    figma.getLocalTextStylesAsync()
+  ]);
+  const paintStyleIndex = buildPaintStyleIndex(paintStyles);
+  const textStyleEntries = buildTextStyleEntries(textStyles);
   const layers: LayerItem[] = [];
   let textReasonCount = 0;
   let colorReasonCount = 0;
@@ -890,13 +835,13 @@ async function scanLayers(): Promise<{
     const suggestedStyles: SuggestedStyleAction[] = [];
 
     if (node.type === 'TEXT') {
-      const textResult = analyzeTextNode(node, textStyles);
+      const textResult = analyzeTextNode(node, textStyleEntries);
       reasons.push(...textResult.reasons);
       suggestedStyles.push(...textResult.suggestedStyles);
       textReasonCount += textResult.reasons.length;
     }
 
-    const colorResult = analyzeColorNode(node, paintStyles);
+    const colorResult = analyzeColorNode(node, paintStyleIndex);
     reasons.push(...colorResult.reasons);
     suggestedStyles.push(...colorResult.suggestedStyles);
     colorReasonCount += colorResult.reasons.length;
@@ -930,7 +875,6 @@ async function scanLayers(): Promise<{
     colorReasonCount,
     criticalCount,
     warningCount,
-    scanScope
   };
 }
 
@@ -1052,6 +996,13 @@ function postAutoScanState(): void {
 }
 
 async function runScan(trigger: 'manual' | 'auto'): Promise<void> {
+  if (figma.currentPage.selection.length === 0) {
+    if (trigger === 'manual') {
+      figma.ui.postMessage({ type: 'no-selection' });
+    }
+    return;
+  }
+
   if (isScanRunning) {
     if (trigger === 'auto') {
       hasPendingAutoScan = true;
@@ -1064,8 +1015,7 @@ async function runScan(trigger: 'manual' | 'auto'): Promise<void> {
     const result = await scanLayers();
     figma.ui.postMessage({ type: 'scan-result', ...result, trigger });
     if (trigger === 'manual') {
-      const scopeLabel = result.scanScope === 'selection' ? '選択範囲' : 'ページ全体';
-      figma.notify(`スキャン完了（${scopeLabel}）: 該当レイヤー ${result.layers.length}件`);
+      figma.notify(`スキャン完了（選択範囲）: 該当レイヤー ${result.layers.length}件`);
     }
   } finally {
     isScanRunning = false;
@@ -1097,7 +1047,7 @@ figma.ui.onmessage = async (msg: UiMessage) => {
   if (msg.type === 'set-auto-scan') {
     autoScanEnabled = msg.enabled;
     postAutoScanState();
-    if (autoScanEnabled) {
+    if (autoScanEnabled && !msg.initial) {
       void runScan('auto');
     }
     return;

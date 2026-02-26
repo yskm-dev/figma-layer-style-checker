@@ -12,51 +12,95 @@
       --font: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
       --mono: 'IBM Plex Mono', 'Courier New', monospace;
 
-      --bg:         #0C0D10;
-      --surface:    #13151A;
-      --elevated:   #1B1E26;
-      --border:     #2C3040;
-      --border-dim: #232736;
+      --bg:         #F7F8FC;
+      --surface:    #FFFFFF;
+      --elevated:   #EEF0F8;
+      --border:     #DDE1EE;
+      --border-dim: #E9EBF5;
 
-      --text-1: #ECEEF4;
-      --text-2: #9DA5BF;
-      --text-3: #6B7390;
+      --text-1: #1A1D2E;
+      --text-2: #6B7390;
+      --text-3: #9DA5BF;
 
-      --accent:      #00D4C8;
-      --accent-bg:   rgba(0, 212, 200, 0.08);
-      --accent-glow: rgba(0, 212, 200, 0.28);
+      --accent:      #4F6FE8;
+      --accent-bg:   rgba(79, 111, 232, 0.08);
+      --accent-glow: rgba(79, 111, 232, 0.20);
 
-      --critical:    #FF4D5B;
-      --critical-bg: rgba(255, 77, 91, 0.08);
-      --critical-bd: rgba(255, 77, 91, 0.28);
+      --critical:    #E03131;
+      --critical-bg: rgba(224, 49, 49, 0.07);
+      --critical-bd: rgba(224, 49, 49, 0.20);
 
-      --warning:    #F5A623;
-      --warning-bg: rgba(245, 166, 35, 0.08);
-      --warning-bd: rgba(245, 166, 35, 0.28);
+      --warning:    #E67700;
+      --warning-bg: rgba(230, 119, 0, 0.07);
+      --warning-bd: rgba(230, 119, 0, 0.20);
 
-      --resolved:    #00C97A;
-      --resolved-bg: rgba(0, 201, 122, 0.08);
-      --resolved-bd: rgba(0, 201, 122, 0.28);
+      --resolved:    #2F9E44;
+      --resolved-bg: rgba(47, 158, 68, 0.07);
+      --resolved-bd: rgba(47, 158, 68, 0.20);
 
       /* Reason: Text style */
-      --c-ts:    #5B9EF5;
-      --c-ts-bg: rgba(91, 158, 245, 0.12);
-      --c-ts-bd: rgba(91, 158, 245, 0.3);
+      --c-ts:    #1971C2;
+      --c-ts-bg: rgba(25, 113, 194, 0.08);
+      --c-ts-bd: rgba(25, 113, 194, 0.20);
 
       /* Reason: Text style が混在 */
-      --c-tm:    #A78BFA;
-      --c-tm-bg: rgba(167, 139, 250, 0.12);
-      --c-tm-bd: rgba(167, 139, 250, 0.3);
+      --c-tm:    #7048E8;
+      --c-tm-bg: rgba(112, 72, 232, 0.08);
+      --c-tm-bd: rgba(112, 72, 232, 0.20);
 
       /* Reason: Fill color */
-      --c-fill:    #f916f1;
-      --c-fill-bg: rgba(249, 22, 249, 0.12);
-      --c-fill-bd: rgba(249, 115, 22, 0.3);
+      --c-fill:    #C2255C;
+      --c-fill-bg: rgba(194, 33, 92, 0.08);
+      --c-fill-bd: rgba(194, 33, 92, 0.20);
 
       /* Reason: Stroke color */
+      --c-stroke:    #0C8599;
+      --c-stroke-bg: rgba(12, 133, 153, 0.08);
+      --c-stroke-bd: rgba(12, 133, 153, 0.20);
+    }
+
+    html.dark {
+      --bg:         #14151B;
+      --surface:    #1C1E27;
+      --elevated:   #252836;
+      --border:     #2D3045;
+      --border-dim: #232636;
+
+      --text-1: #E8EAF2;
+      --text-2: #8B93B0;
+      --text-3: #5E6680;
+
+      --accent:      #5B82F5;
+      --accent-bg:   rgba(91, 130, 245, 0.12);
+      --accent-glow: rgba(91, 130, 245, 0.25);
+
+      --critical:    #FF5263;
+      --critical-bg: rgba(255, 82, 99, 0.10);
+      --critical-bd: rgba(255, 82, 99, 0.30);
+
+      --warning:    #F5A623;
+      --warning-bg: rgba(245, 166, 35, 0.10);
+      --warning-bd: rgba(245, 166, 35, 0.30);
+
+      --resolved:    #00C97A;
+      --resolved-bg: rgba(0, 201, 122, 0.10);
+      --resolved-bd: rgba(0, 201, 122, 0.30);
+
+      --c-ts:    #5B9EF5;
+      --c-ts-bg: rgba(91, 158, 245, 0.12);
+      --c-ts-bd: rgba(91, 158, 245, 0.30);
+
+      --c-tm:    #A78BFA;
+      --c-tm-bg: rgba(167, 139, 250, 0.12);
+      --c-tm-bd: rgba(167, 139, 250, 0.30);
+
+      --c-fill:    #F060EC;
+      --c-fill-bg: rgba(240, 96, 236, 0.12);
+      --c-fill-bd: rgba(240, 96, 236, 0.30);
+
       --c-stroke:    #22D3EE;
       --c-stroke-bg: rgba(34, 211, 238, 0.12);
-      --c-stroke-bd: rgba(34, 211, 238, 0.3);
+      --c-stroke-bd: rgba(34, 211, 238, 0.30);
     }
 
     html, body {
@@ -102,11 +146,10 @@
     }
 
     .app-title {
-      font-family: var(--font);
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-1);
-      white-space: nowrap;
+      height: 20px;
+      width: auto;
+      display: block;
+      font-weight: bold;
       margin-right: 5px;
     }
 
@@ -125,23 +168,22 @@
       transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
     }
 
-    /* Scan button — cyan outline with glow */
+    /* Scan button — solid fill */
     .btn-primary {
-      background: transparent;
-      color: var(--accent);
+      background: var(--accent);
+      color: #FFFFFF;
       border-color: var(--accent);
     }
     .btn-primary:hover {
-      background: var(--accent-bg);
-      box-shadow: 0 0 10px var(--accent-glow);
+      background: var(--accent);
+      opacity: 0.88;
     }
     .btn-primary:active {
-      background: rgba(0, 212, 200, 0.15);
+      opacity: 0.75;
     }
     .btn-primary:disabled {
       opacity: 0.3;
       cursor: default;
-      box-shadow: none;
     }
 
     .btn-ghost {
@@ -158,11 +200,13 @@
       background: var(--elevated);
       color: var(--text-1);
       border-color: var(--border);
+      font-size: 12px;
+      padding: 4px 5px;
     }
     .btn-soft:hover {
-      background: #20242e;
+      background: var(--border);
       color: var(--text-1);
-      border-color: #3a4055;
+      border-color: var(--border);
     }
     .btn-soft:disabled {
       opacity: 0.3;
@@ -170,18 +214,20 @@
     }
 
     .btn-toggle-on {
-      background: var(--accent-bg);
-      color: var(--accent);
+      background: var(--accent);
+      color: #FFFFFF;
       border-color: var(--accent);
+      font-size: 12px;
+      padding: 4px 5px;
     }
     .btn-toggle-on:hover {
-      box-shadow: 0 0 10px var(--accent-glow);
+      opacity: 0.88;
     }
 
     #btn-auto-scan {
       width: auto;
       min-width: auto;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
       padding: 4px 6px;
       line-height: 1.3;
@@ -225,35 +271,6 @@
       flex-shrink: 0;
     }
 
-    .scan-scope {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px 0;
-      background: var(--surface);
-      font-size: 11px;
-      font-family: var(--mono);
-      color: var(--text-2);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .scope-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 1px 7px;
-      border-radius: 3px;
-      font-size: 11px;
-      font-weight: 500;
-      font-family: var(--mono);
-      background: var(--elevated);
-      border: 1px solid var(--border);
-      color: var(--accent);
-      letter-spacing: 0.04em;
-      text-transform: none;
-    }
-
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -272,7 +289,7 @@
     }
 
     .stat-label {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-2);
       font-family: var(--mono);
       font-weight: 400;
@@ -282,7 +299,7 @@
     }
 
     .stat-num {
-      font-size: 21px;
+      font-size: 20px;
       font-weight: 700;
       font-family: var(--mono);
       line-height: 1;
@@ -361,15 +378,16 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-left: 2px solid var(--border);
-      border-radius: 4px;
+      border-radius: 8px;
       padding: 10px 11px;
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
     }
 
     .card:hover {
       background: var(--elevated);
-      border-color: #333844;
+      border-color: var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .card.critical {
@@ -379,8 +397,9 @@
     }
     .card.critical:hover {
       border-left-color: var(--critical);
-      border-color: rgba(255, 77, 91, 0.4);
-      background: rgba(255, 77, 91, 0.12);
+      border-color: var(--critical-bd);
+      background: var(--critical-bg);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .card.warning {
@@ -390,8 +409,9 @@
     }
     .card.warning:hover {
       border-left-color: var(--warning);
-      border-color: rgba(245, 166, 35, 0.4);
-      background: rgba(245, 166, 35, 0.12);
+      border-color: var(--warning-bd);
+      background: var(--warning-bg);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .card.resolved {
@@ -401,7 +421,8 @@
     }
     .card.resolved:hover {
       border-left-color: var(--resolved);
-      border-color: rgba(0, 201, 122, 0.4);
+      border-color: var(--resolved-bd);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .card-head {
@@ -482,8 +503,8 @@
       font-size: 11px;
       font-weight: 600;
       color: var(--text-1);
-      background: #1E2438;
-      border: 1px solid #3A4260;
+      background: var(--elevated);
+      border: 1px solid var(--border);
       border-radius: 4px;
       padding: 3px 9px;
       max-width: 140px;
@@ -567,16 +588,16 @@
       font-weight: 700;
       color: var(--accent);
       background: var(--accent-bg);
-      border: 1px solid rgba(0, 212, 200, 0.35);
+      border: 1px solid var(--accent-glow);
       border-radius: 3px;
       cursor: pointer;
-      transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
+      transition: background 0.12s, border-color 0.12s;
       letter-spacing: 0.04em;
     }
     .jump-btn:hover {
-      background: rgba(0, 212, 200, 0.14);
-      border-color: rgba(0, 212, 200, 0.6);
-      box-shadow: 0 0 6px rgba(0, 212, 200, 0.2);
+      background: var(--accent-bg);
+      border-color: var(--accent);
+      opacity: 0.85;
     }
 
     .apply-btn {
@@ -587,15 +608,15 @@
       font-weight: 700;
       color: var(--text-1);
       background: var(--elevated);
-      border: 1px solid #3A4260;
+      border: 1px solid var(--border);
       border-radius: 3px;
       cursor: pointer;
       transition: background 0.12s, color 0.12s, border-color 0.12s;
     }
 
     .apply-btn:hover {
-      background: #222840;
-      border-color: #4E587A;
+      background: var(--border);
+      border-color: var(--border);
       color: var(--text-1);
     }
 
@@ -651,6 +672,13 @@
       border-top: 1px solid var(--border);
       padding: 6px 13px;
       display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .legend-items {
+      display: flex;
       flex-wrap: wrap;
       gap: 4px 12px;
       align-items: center;
@@ -673,15 +701,110 @@
       flex-shrink: 0;
       opacity: 0.85;
     }
+
+    /* ── Legend controls row ─────────────────── */
+    .legend-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      width: 100%;
+    }
+
+    /* ── Theme toggle button ──────────────────── */
+    .theme-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 19px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--elevated);
+      color: var(--text-2);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .theme-btn:hover {
+      background: var(--border);
+      color: var(--text-1);
+    }
+
+    .theme-icon { display: flex; }
+    .theme-icon-sun { display: none; }
+    html.dark .theme-icon-moon { display: none; }
+    html.dark .theme-icon-sun  { display: flex; }
+
+    /* ── Auto-scan toggle ────────────────────── */
+    .auto-scan-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .auto-scan-text {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-2);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 34px;
+      height: 19px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background: var(--border);
+      transition: background 0.2s;
+    }
+
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+    }
+
+    .toggle-switch input:checked + .toggle-track {
+      background: var(--accent);
+    }
+
+    .toggle-switch input:checked + .toggle-track::after {
+      transform: translateX(15px);
+    }
   </style>
 </head>
 <body>
 
   <header class="header">
     <div class="header-row">
-      <span class="app-title">Layer Style Checker</span>
+      <span class="app-title">LSChecker</span>
       <div class="btn-group">
-        <button class="btn btn-ghost" id="btn-auto-scan">自動:OFF</button>
         <button class="btn btn-soft" id="btn-apply-all" disabled>一括適用（0）</button>
         <button class="btn btn-primary" id="btn-scan">スキャン</button>
       </div>
@@ -689,7 +812,7 @@
   </header>
 
   <div id="summary-wrap">
-    <div class="summary-placeholder">▸ スキャンボタンを押して開始</div>
+    <div class="summary-placeholder">▸ レイヤーを選択してスキャン</div>
   </div>
 
   <div id="list-header-wrap"></div>
@@ -698,17 +821,40 @@
     <li class="state-box">
       <div class="state-icon">🔍</div>
       <div class="state-title">未スキャン</div>
-      <div class="state-desc">「スキャン」ボタンを押すと<br>現在のページ全体をスキャンします</div>
+      <div class="state-desc">レイヤーを選択してから<br>「スキャン」ボタンを押してください</div>
     </li>
   </ul>
 
   <footer class="legend">
-    <span class="leg"><span class="leg-dot" style="background:var(--c-ts)"></span>Text style</span>
-    <span class="leg"><span class="leg-dot" style="background:var(--c-tm)"></span>Text 混在</span>
-    <span class="leg"><span class="leg-dot" style="background:var(--c-fill)"></span>Fill</span>
-    <span class="leg"><span class="leg-dot" style="background:var(--c-stroke)"></span>Stroke</span>
-    <span class="leg"><span class="leg-dot" style="background:var(--critical)"></span>要修正</span>
-    <span class="leg"><span class="leg-dot" style="background:var(--warning)"></span>要確認</span>
+    <div class="legend-controls">
+      <label class="auto-scan-label" for="btn-auto-scan">
+        <span class="auto-scan-text">自動スキャン</span>
+        <span class="toggle-switch">
+          <input type="checkbox" id="btn-auto-scan">
+          <span class="toggle-track"></span>
+        </span>
+      </label>
+      <button class="theme-btn" id="btn-theme" title="テーマ切替" aria-label="テーマ切替">
+        <span class="theme-icon theme-icon-moon">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </span>
+        <span class="theme-icon theme-icon-sun">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </span>
+      </button>
+    </div>
   </footer>
 
   <script>
@@ -718,6 +864,18 @@
     const layerList = document.getElementById('layer-list');
     const btnApplyAll = document.getElementById('btn-apply-all');
     const btnAutoScan = document.getElementById('btn-auto-scan');
+    const btnTheme = document.getElementById('btn-theme');
+
+    let isDark = false;
+    const applyTheme = () => {
+      document.documentElement.classList.toggle('dark', isDark);
+    };
+    if (btnTheme instanceof HTMLButtonElement) {
+      btnTheme.addEventListener('click', () => {
+        isDark = !isDark;
+        applyTheme();
+      });
+    }
 
     const esc = (s) =>
       String(s)
@@ -758,15 +916,13 @@
 
     const pendingApplyLabelMap = new Map();
     let currentResult = null;
-    let autoScanEnabled = false;
+    let autoScanEnabled = true;
 
     const updateAutoScanButton = () => {
-      if (!(btnAutoScan instanceof HTMLButtonElement)) {
+      if (!(btnAutoScan instanceof HTMLInputElement)) {
         return;
       }
-
-      btnAutoScan.classList.toggle('btn-toggle-on', autoScanEnabled);
-      btnAutoScan.textContent = `自動:${autoScanEnabled ? 'ON' : 'OFF'}`;
+      btnAutoScan.checked = autoScanEnabled;
     };
 
     const getApplyButtonKey = (nodeId, kind, styleId) => `${nodeId}::${kind}::${styleId}`;
@@ -847,15 +1003,10 @@
     const renderFromResult = (msg) => {
       const hasOpenIssues = msg.layers.some((layer) => layer.reasons.length > 0);
 
-      const isSelection = msg.scanScope === 'selection';
       summaryWrap.innerHTML = `
-        <div class="scan-scope">
-          <span class="scope-tag">${isSelection ? '◉ 選択レイヤー' : '□ ページ全体'}</span>
-          をスキャン
-        </div>
         <div class="summary-grid">
           <div class="stat">
-            <div class="stat-label">スキャンレイヤー</div>
+            <div class="stat-label">レイヤー</div>
             <div class="stat-num">${msg.scannedCount}</div>
           </div>
           <div class="stat ${msg.criticalCount === 0 ? 'is-resolved' : 'is-critical'}">
@@ -973,16 +1124,17 @@
       parent.postMessage({ pluginMessage: { type: 'apply-bulk', actions } }, '*');
     });
 
-    if (btnAutoScan instanceof HTMLButtonElement) {
-      btnAutoScan.addEventListener('click', () => {
-        autoScanEnabled = !autoScanEnabled;
-        updateAutoScanButton();
+    if (btnAutoScan instanceof HTMLInputElement) {
+      btnAutoScan.addEventListener('change', () => {
+        autoScanEnabled = btnAutoScan.checked;
         parent.postMessage(
           { pluginMessage: { type: 'set-auto-scan', enabled: autoScanEnabled } },
           '*'
         );
       });
       updateAutoScanButton();
+      // 起動時に Plugin 側へ初期状態を同期する（initial: true でスキャンをスキップ）
+      parent.postMessage({ pluginMessage: { type: 'set-auto-scan', enabled: autoScanEnabled, initial: true } }, '*');
     }
 
     layerList.addEventListener('click', (e) => {
@@ -1023,6 +1175,18 @@
       if (msg.type === 'auto-scan-state') {
         autoScanEnabled = !!msg.enabled;
         updateAutoScanButton();
+        return;
+      }
+
+      if (msg.type === 'no-selection') {
+        summaryWrap.innerHTML = `<div class="summary-placeholder">▸ レイヤーを選択してスキャン</div>`;
+        listHeaderWrap.innerHTML = '';
+        layerList.innerHTML = `<li class="state-box">
+          <div class="state-icon">👆</div>
+          <div class="state-title">未選択</div>
+          <div class="state-desc">スキャンするレイヤーを<br>Figma 上で選択してください</div>
+        </li>`;
+        updateBulkApplyButton();
         return;
       }
 
@@ -1110,7 +1274,6 @@
         colorReasonCount: msg.colorReasonCount,
         criticalCount: msg.criticalCount,
         warningCount: msg.warningCount,
-        scanScope: msg.scanScope,
       };
 
       recalcCounts(currentResult);
