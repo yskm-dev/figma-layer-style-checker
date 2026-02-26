@@ -27,7 +27,7 @@ Figma ドキュメント内のレイヤーをスキャンし、スタイル運�
 ### 3.2 重要度
 
 - 内部値: `critical` / `warning`
-- UI 表示: `critical` -> 「要修正」、`warning` -> 「要確認」
+- UI 表示: `critical` -> 「要修正」、`warning` -> 「未定義」
 
 ### 3.3 表示順
 
@@ -52,6 +52,10 @@ Reason は以下の固定順で表示する。
 - `lineHeightPx`
 
 重要度: `warning`
+
+補足:
+
+- `Text style が混在` が成立した場合、同ノードの Fill / Stroke 判定はスキップする。
 
 ### 4.2 Text style 未適用
 
@@ -82,6 +86,7 @@ Reason は以下の固定順で表示する。
 
 対象ノードに対して以下を満たすと検出。
 
+- `Text style が混在` が成立していない
 - Paint 配列が `figma.mixed` ではない
 - Paint が可視（`visible !== false`）
 - Paint opacity が `> 0`
@@ -145,6 +150,8 @@ Reason は以下の固定順で表示する。
 - `colorReasonCount`
 - `criticalCount`
 - `warningCount`
+- `textStyleOptions[]`（id, name）: ローカル Text Style 全一覧
+- `paintStyleOptions[]`（id, name）: ローカル Paint Style 全一覧
 
 ## 8. UI 仕様（ui.html）
 
@@ -164,7 +171,7 @@ Reason は以下の固定順で表示する。
 
 - スキャンレイヤー数
 - 要修正数
-- 要確認数
+- 未定義数
 
 選択なし時は「▸ レイヤーを選択してスキャン」プレースホルダーを表示。
 
@@ -180,13 +187,23 @@ Reason は以下の固定順で表示する。
 
 - レイヤー名 / node type / severity pill
 - パス
-- issue 行（reason バッジ + 候補名 + 適用ボタン、または `候補なし`）
+- issue 行（reason バッジ + 以下のいずれか）
+  - 候補あり: 候補名チップ + 適用ボタン
+  - 候補なし（`Text style` / `Fill color` / `Stroke color`）: スタイル選択 `<select>` + 適用ボタン
+  - `Text style が混在`: バッジのみ（select・適用ボタン・候補なしラベルは非表示）
+
+クリック操作:
+
+- カードクリック（issue 行以外）: 対象レイヤーへフォーカス移動
+- 候補名チップ（`.issue-val`）クリック: レイヤー移動しない
+- `<select>` クリック: レイヤー移動しない
+- 適用ボタンクリック: レイヤー移動しない
 
 ### 8.4 適用後 UI 更新
 
 - 個別適用成功時: 対応 issue 行を削除
 - カードの issue が0件になった場合: `解消` 表示 + `問題なし` バッジへ置換
-- サマリー件数（要修正/要確認）を再計算して更新
+- サマリー件数（要修正/未定義）を再計算して更新
 - 一括適用ボタン件数を更新
 
 ### 8.5 フッター（コントロール）

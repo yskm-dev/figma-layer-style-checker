@@ -30,9 +30,9 @@
       --critical-bg: rgba(224, 49, 49, 0.07);
       --critical-bd: rgba(224, 49, 49, 0.20);
 
-      --warning:    #E67700;
-      --warning-bg: rgba(230, 119, 0, 0.07);
-      --warning-bd: rgba(230, 119, 0, 0.20);
+      --warning:    #7048C8;
+      --warning-bg: rgba(112, 72, 200, 0.07);
+      --warning-bd: rgba(112, 72, 200, 0.20);
 
       --resolved:    #2F9E44;
       --resolved-bg: rgba(47, 158, 68, 0.07);
@@ -44,9 +44,9 @@
       --c-ts-bd: rgba(25, 113, 194, 0.20);
 
       /* Reason: Text style が混在 */
-      --c-tm:    #7048E8;
-      --c-tm-bg: rgba(112, 72, 232, 0.08);
-      --c-tm-bd: rgba(112, 72, 232, 0.20);
+      --c-tm:    #C96B00;
+      --c-tm-bg: rgba(201, 107, 0, 0.08);
+      --c-tm-bd: rgba(201, 107, 0, 0.20);
 
       /* Reason: Fill color */
       --c-fill:    #C2255C;
@@ -78,9 +78,9 @@
       --critical-bg: rgba(255, 82, 99, 0.10);
       --critical-bd: rgba(255, 82, 99, 0.30);
 
-      --warning:    #F5A623;
-      --warning-bg: rgba(245, 166, 35, 0.10);
-      --warning-bd: rgba(245, 166, 35, 0.30);
+      --warning:    #9D7FEA;
+      --warning-bg: rgba(157, 127, 234, 0.10);
+      --warning-bd: rgba(157, 127, 234, 0.30);
 
       --resolved:    #00C97A;
       --resolved-bg: rgba(0, 201, 122, 0.10);
@@ -90,9 +90,9 @@
       --c-ts-bg: rgba(91, 158, 245, 0.12);
       --c-ts-bd: rgba(91, 158, 245, 0.30);
 
-      --c-tm:    #A78BFA;
-      --c-tm-bg: rgba(167, 139, 250, 0.12);
-      --c-tm-bd: rgba(167, 139, 250, 0.30);
+      --c-tm:    #F0943A;
+      --c-tm-bg: rgba(240, 148, 58, 0.12);
+      --c-tm-bd: rgba(240, 148, 58, 0.30);
 
       --c-fill:    #F060EC;
       --c-fill-bg: rgba(240, 96, 236, 0.12);
@@ -245,7 +245,6 @@
       font-size: 12px;
       color: var(--text-3);
       background: var(--surface);
-      font-family: var(--mono);
       letter-spacing: 0.04em;
       animation: scanBlink 2.4s ease-in-out infinite;
     }
@@ -258,7 +257,6 @@
       display: flex;
       align-items: center;
       gap: 7px;
-      font-family: var(--mono);
       letter-spacing: 0.04em;
     }
 
@@ -291,7 +289,6 @@
     .stat-label {
       font-size: 11px;
       color: var(--text-2);
-      font-family: var(--mono);
       font-weight: 400;
       letter-spacing: 0.07em;
       text-transform: uppercase;
@@ -301,7 +298,6 @@
     .stat-num {
       font-size: 20px;
       font-weight: 700;
-      font-family: var(--mono);
       line-height: 1;
       color: var(--text-1);
     }
@@ -328,7 +324,6 @@
     .list-label {
       font-size: 11px;
       font-weight: 500;
-      font-family: var(--mono);
       color: var(--text-2);
       letter-spacing: 0.07em;
       text-transform: uppercase;
@@ -638,6 +633,28 @@
       opacity: 1;
     }
 
+    .style-select {
+      font-size: 11px;
+      color: var(--text-1);
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 3px 5px;
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.12s;
+    }
+
+    .style-select:focus {
+      border-color: var(--accent);
+    }
+
+    html.dark .style-select {
+      color-scheme: dark;
+    }
+
     /* ── State boxes ─────────────────────────── */
     #layer-list > li.state-box {
       flex: 1;
@@ -652,7 +669,6 @@
 
     .state-icon  { font-size: 28px; margin-bottom: 6px; opacity: 0.8; }
     .state-title {
-      font-family: var(--mono);
       font-size: 12px;
       font-weight: 500;
       color: var(--text-2);
@@ -689,7 +705,6 @@
       align-items: center;
       gap: 4px;
       font-size: 11px;
-      font-family: var(--mono);
       color: var(--text-2);
       letter-spacing: 0.04em;
     }
@@ -749,7 +764,6 @@
 
     .auto-scan-text {
       font-size: 11px;
-      font-family: var(--mono);
       color: var(--text-2);
       letter-spacing: 0.04em;
       white-space: nowrap;
@@ -917,6 +931,8 @@
     const pendingApplyLabelMap = new Map();
     let currentResult = null;
     let autoScanEnabled = true;
+    let allTextStyleOptions = [];
+    let allPaintStyleOptions = [];
 
     const updateAutoScanButton = () => {
       if (!(btnAutoScan instanceof HTMLInputElement)) {
@@ -1014,7 +1030,7 @@
             <div class="stat-num">${msg.criticalCount}</div>
           </div>
           <div class="stat is-warning">
-            <div class="stat-label">要確認</div>
+            <div class="stat-label">未定義</div>
             <div class="stat-num">${msg.warningCount}</div>
           </div>
         </div>
@@ -1044,7 +1060,7 @@
         return;
       }
 
-      const SEV_LABEL = { critical: '要修正', warning: '要確認', resolved: '解消' };
+      const SEV_LABEL = { critical: '要修正', warning: '未定義', resolved: '解消' };
 
       layerList.innerHTML = msg.layers
         .map((item) => {
@@ -1075,9 +1091,32 @@
                         >${esc(STYLE_KIND_LABEL[suggested.kind] || suggested.kind)}適用</button>
                       </div>`;
                     }
+                    const selectKind = (kind === 'text' || kind === 'fill' || kind === 'stroke') && r.label !== 'Text style が混在' ? kind : null;
+                    if (selectKind) {
+                      const opts = selectKind === 'text' ? allTextStyleOptions : allPaintStyleOptions;
+                      const optionsHtml = opts.length > 0
+                        ? opts.map((o) => `<option value="${esc(o.id)}">${esc(o.name)}</option>`).join('')
+                        : '';
+                      const selectHtml = `<select class="style-select" data-node-id="${esc(item.id)}" data-kind="${esc(selectKind)}">
+                        <option value="">-- スタイルを選択 --</option>
+                        ${optionsHtml}
+                      </select>`;
+                      const applyBtnHtml = `<button
+                        class="apply-btn select-apply-btn"
+                        disabled
+                        data-node-id="${esc(item.id)}"
+                        data-kind="${esc(selectKind)}"
+                        data-style-id=""
+                      >適用</button>`;
+                      return `<div class="issue-row">
+                        <span class="badge ${badgeClass}">${esc(r.label)}</span>
+                        ${selectHtml}
+                        ${applyBtnHtml}
+                      </div>`;
+                    }
                     return `<div class="issue-row">
                       <span class="badge ${badgeClass}">${esc(r.label)}</span>
-                      <span class="no-cand-label">候補なし</span>
+                      ${r.label !== 'Text style が混在' ? '<span class="no-cand-label">候補なし</span>' : ''}
                     </div>`;
                   })
                   .join('');
@@ -1137,7 +1176,22 @@
       parent.postMessage({ pluginMessage: { type: 'set-auto-scan', enabled: autoScanEnabled, initial: true } }, '*');
     }
 
+    layerList.addEventListener('change', (e) => {
+      const styleSelect = e.target;
+      if (!(styleSelect instanceof HTMLSelectElement) || !styleSelect.classList.contains('style-select')) return;
+      const row = styleSelect.closest('.issue-row');
+      if (!row) return;
+      const applyBtn = row.querySelector('.select-apply-btn');
+      if (!(applyBtn instanceof HTMLButtonElement)) return;
+      const selectedId = styleSelect.value;
+      applyBtn.disabled = !selectedId;
+      applyBtn.dataset.styleId = selectedId;
+    });
+
     layerList.addEventListener('click', (e) => {
+      // セレクト・候補名クリック時はレイヤー移動しない
+      if (e.target.closest('.style-select') || e.target.closest('.issue-val')) return;
+
       // 適用ボタンのクリック
       const applyBtn = e.target.closest('.apply-btn');
       if (applyBtn instanceof HTMLElement) {
@@ -1266,6 +1320,9 @@
       }
 
       if (msg.type !== 'scan-result') return;
+
+      allTextStyleOptions = Array.isArray(msg.textStyleOptions) ? msg.textStyleOptions : [];
+      allPaintStyleOptions = Array.isArray(msg.paintStyleOptions) ? msg.paintStyleOptions : [];
 
       currentResult = {
         scannedCount: msg.scannedCount,

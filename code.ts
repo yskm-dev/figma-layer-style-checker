@@ -808,6 +808,8 @@ function postProcessReasons(
   }
 }
 
+type StyleOption = { id: string; name: string };
+
 async function scanLayers(): Promise<{
   scannedCount: number;
   layers: LayerItem[];
@@ -815,6 +817,8 @@ async function scanLayers(): Promise<{
   colorReasonCount: number;
   criticalCount: number;
   warningCount: number;
+  textStyleOptions: StyleOption[];
+  paintStyleOptions: StyleOption[];
 }> {
   const { nodes } = getTargetNodes();
   const [paintStyles, textStyles] = await Promise.all([
@@ -841,10 +845,13 @@ async function scanLayers(): Promise<{
       textReasonCount += textResult.reasons.length;
     }
 
-    const colorResult = analyzeColorNode(node, paintStyleIndex);
-    reasons.push(...colorResult.reasons);
-    suggestedStyles.push(...colorResult.suggestedStyles);
-    colorReasonCount += colorResult.reasons.length;
+    const hasMixedText = reasons.some((r) => r.label === 'Text style が混在');
+    if (!hasMixedText) {
+      const colorResult = analyzeColorNode(node, paintStyleIndex);
+      reasons.push(...colorResult.reasons);
+      suggestedStyles.push(...colorResult.suggestedStyles);
+      colorReasonCount += colorResult.reasons.length;
+    }
 
     postProcessReasons(reasons, suggestedStyles);
 
@@ -875,6 +882,8 @@ async function scanLayers(): Promise<{
     colorReasonCount,
     criticalCount,
     warningCount,
+    textStyleOptions: textStyles.map((s) => ({ id: s.id, name: s.name })),
+    paintStyleOptions: paintStyles.map((s) => ({ id: s.id, name: s.name })),
   };
 }
 

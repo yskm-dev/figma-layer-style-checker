@@ -563,10 +563,13 @@ function scanLayers() {
                 suggestedStyles.push(...textResult.suggestedStyles);
                 textReasonCount += textResult.reasons.length;
             }
-            const colorResult = analyzeColorNode(node, paintStyleIndex);
-            reasons.push(...colorResult.reasons);
-            suggestedStyles.push(...colorResult.suggestedStyles);
-            colorReasonCount += colorResult.reasons.length;
+            const hasMixedText = reasons.some((r) => r.label === 'Text style が混在');
+            if (!hasMixedText) {
+                const colorResult = analyzeColorNode(node, paintStyleIndex);
+                reasons.push(...colorResult.reasons);
+                suggestedStyles.push(...colorResult.suggestedStyles);
+                colorReasonCount += colorResult.reasons.length;
+            }
             postProcessReasons(reasons, suggestedStyles);
             if (reasons.length > 0) {
                 for (const reason of reasons) {
@@ -594,6 +597,8 @@ function scanLayers() {
             colorReasonCount,
             criticalCount,
             warningCount,
+            textStyleOptions: textStyles.map((s) => ({ id: s.id, name: s.name })),
+            paintStyleOptions: paintStyles.map((s) => ({ id: s.id, name: s.name })),
         };
     });
 }
